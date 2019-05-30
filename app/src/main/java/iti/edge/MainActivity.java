@@ -13,8 +13,12 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
+import android.content.res.Resources;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -76,6 +80,26 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         mCamera = (CameraBridgeViewBase) findViewById(R.id.OpenCVCamera);
 
         if (checkPermission()) {
+
+            final ImageView effect_camera= (ImageView)findViewById(R.id.imageView);
+            final View parentView= findViewById(R.id.mainContent);
+
+
+            effect_camera.post(new Runnable(){
+                @Override
+                public void run(){
+                    int height=parentView.getHeight();
+                    int width=parentView.getWidth();
+                    RelativeLayout.LayoutParams lp= (RelativeLayout.LayoutParams)effect_camera.getLayoutParams();
+                    int percentHeight = (int) (height*.8);
+                    int percentWidth= (int) (width*.8);
+                    lp.height=percentHeight;
+                    lp.width=percentWidth;
+                    effect_camera.setLayoutParams(lp);
+                }
+            });
+
+
             mCamera.setVisibility(SurfaceView.VISIBLE);
             mCamera.setCvCameraViewListener(this);
 
@@ -214,6 +238,15 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
                 .setNegativeButton("Cancel", null)
                 .create()
                 .show();
+    }
+
+    public static int getScreenWidth() {
+        return Resources.getSystem().getDisplayMetrics().widthPixels;
+    }
+
+
+    public static int getScreenHeight() {
+        return Resources.getSystem().getDisplayMetrics().heightPixels;
     }
 
 }
