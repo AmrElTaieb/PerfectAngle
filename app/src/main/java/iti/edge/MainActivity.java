@@ -2,7 +2,9 @@ package iti.edge;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.SurfaceView;
 import android.view.WindowManager;
 
@@ -65,6 +67,14 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         mCamera = (CameraBridgeViewBase) findViewById(R.id.OpenCVCamera);
         mCamera.setVisibility(SurfaceView.VISIBLE);
         mCamera.setCvCameraViewListener(this);
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int height = displayMetrics.heightPixels;
+        int width = displayMetrics.widthPixels;
+        Log.i("zzzzzzzz", "Width " + width);
+        Log.i("zzzzzzzz", "height " + height);
+
     }
 
     @Override
@@ -82,6 +92,16 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
 
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+        Log.i("loop","Camera frame iteration ");
+
+         runCamera(inputFrame);
+//        //Return result
+        return mRgbaF;
+
+    }
+
+    public void runCamera(CameraBridgeViewBase.CvCameraViewFrame inputFrame)
+    {
         double maxArea=0;
         Point first = new Point(0,0) ,second = new Point(0,0) ;
 
@@ -90,7 +110,7 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         mRgba = inputFrame.rgba();
         Imgproc.cvtColor(mRgba,  mRgba, Imgproc.COLOR_BGR2GRAY);
         Imgproc.GaussianBlur(mRgba, mRgba, new Size(5, 5), 0);
-        Imgproc.Canny(mRgba, mRgba, 1, 20);
+        Imgproc.Canny(mRgba, mRgba, 30, 90);
         Imgproc.findContours(mRgba,contours,edges,Imgproc.RETR_LIST,Imgproc.CHAIN_APPROX_SIMPLE);
 
 
@@ -99,16 +119,16 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         while (iterator.hasNext()){
             MatOfPoint contour = iterator.next();
             rect = Imgproc.boundingRect(contour);
-             if(rect.area() > maxArea)
-             {
-                 maxArea = rect.area() ;
-                 first  = new Point(rect.x,rect.y);
-                 second = new Point(rect.x+rect.width,rect.y+rect.height);
+            if(rect.area() > maxArea)
+            {
+                maxArea = rect.area() ;
+                first  = new Point(rect.x,rect.y);
+                second = new Point(rect.x+rect.width,rect.y+rect.height);
 
-                 Log.i("Condition","Entered If Condition");
-             }
+                Log.i("Condition","Entered If Condition");
+            }
 
-             Log.i("iteration","Loop has passed");
+            Log.i("iteration","Loop has passed");
 //            Imgproc.circle(mRgba,new Point(rect.x,rect.y),5,new Scalar(200,0,0),2);
 //            Imgproc.circle(mRgba,new Point(rect.x+rect.width,rect.y),5,new Scalar(200,0,0),2);
 //            Imgproc.circle(mRgba,new Point(rect.x,rect.y+rect.height),5,new Scalar(200,0,0),2);
@@ -116,13 +136,12 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         }
         Log.i("finish","Loop has finished");
         Imgproc.rectangle(mRgba,first, second,new Scalar(255.0,255.0,255.0));
+         Log.i("coordinates" , "First Point"+first.x +" Second Point"+first.y);
+        Log.i("coordinates" , "Second Point"+second.x +" Second Point"+second.y);
 
 
 
-       mRgba.convertTo(mRgbaF,CvType.CV_8U);
-//        //Return result
-        return mRgbaF;
-
+        mRgba.convertTo(mRgbaF,CvType.CV_8U);
     }
 
 
