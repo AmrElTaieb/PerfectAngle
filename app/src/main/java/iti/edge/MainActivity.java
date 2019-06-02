@@ -1,7 +1,13 @@
 package iti.edge;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -12,6 +18,8 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
+import org.opencv.android.Utils;
+import org.opencv.core.CvException;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
@@ -21,15 +29,19 @@ import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 public class MainActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2 {
     Mat mRgba;
     Mat mRgbaF;
     Mat mRgbaT;
-
+    int count =0 ;
     protected CameraBridgeViewBase mCamera;
 
     //Create load callback
@@ -91,16 +103,41 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
     }
 
     @Override
-    public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+    public Mat onCameraFrame(final CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         Log.i("loop","Camera frame iteration ");
 
-         runCamera(inputFrame);
-//        //Return result
+//        Handler handler = new Handler(Looper.getMainLooper());
+//
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//
+//            }
+//        }, 500 );
+//        count++;
+//        if(count > 25 )
+//        {
+//            count =0 ;
+//          mRgba =  runCamera(inputFrame);
+//        }
+//        else if (count > 15)
+//        {
+//            mRgba =  runCamera(inputFrame);
+//        }
+//        else
+//        {
+//            mRgba = inputFrame.rgba();
+//            Imgproc.cvtColor(mRgba,  mRgba, Imgproc.COLOR_BGR2GRAY);
+//            Imgproc.Canny(mRgba, mRgba, 30, 90);
+//
+//        }
+
+       mRgbaF =  runCamera(inputFrame);
         return mRgbaF;
 
     }
 
-    public void runCamera(CameraBridgeViewBase.CvCameraViewFrame inputFrame)
+    public Mat runCamera(CameraBridgeViewBase.CvCameraViewFrame inputFrame)
     {
         double maxArea=0;
         Point first = new Point(0,0) ,second = new Point(0,0) ;
@@ -136,14 +173,36 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         }
         Log.i("finish","Loop has finished");
         Imgproc.rectangle(mRgba,first, second,new Scalar(255.0,255.0,255.0));
+       if (first.x >= 10 && first.x <=110   && first.y >=20 && first.y <= 120  &&
+               second.x >= 600 && second.x <=700   && second.y >=400 && second.y <= 500)
+       {
+           Log.i("amr" , "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
+           takePicture(mRgba);
+       }
+
+
+
          Log.i("coordinates" , "First Point"+first.x +" Second Point"+first.y);
         Log.i("coordinates" , "Second Point"+second.x +" Second Point"+second.y);
 
 
 
         mRgba.convertTo(mRgbaF,CvType.CV_8U);
-    }
 
+        return  mRgbaF ;
+    }
+public void takePicture(Mat tmp)
+    {
+    Bitmap bmp = null;
+    try {
+        //Imgproc.cvtColor(seedsImage, tmp, Imgproc.COLOR_RGB2BGRA);
+        //  Imgproc.cvtColor(seedsImage, tmp, Imgproc.COLOR_GRAY2RGBA, 4);
+        bmp = Bitmap.createBitmap(tmp.cols(), tmp.rows(), Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(tmp, bmp);
+        saveToInternalStorage(bmp) ;
+    }
+    catch (CvException e){Log.d("Exception",e.getMessage());}
+}
 
     @Override
     protected void onPause() {
@@ -163,5 +222,54 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
     public void onPointerCaptureChanged(boolean hasCapture) {
 
     }
+    private String saveToInternalStorage(Bitmap bitmapImage)
+    {
+
+        ContextWrapper cw = new ContextWrapper(this);
+        // path to /data/data/yourapp/app_data/imageDir
+        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
+        // Create imageDir
+        File mypath = new File(directory, "all.jpg");
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(mypath);
+            // Use the compress method on the BitMap object to write image to the OutputStream
+            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        Log.i("amr2",""+directory.getAbsolutePath());
+        return directory.getAbsolutePath();
+    }
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
