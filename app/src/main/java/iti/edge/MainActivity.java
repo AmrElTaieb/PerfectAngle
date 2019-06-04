@@ -42,17 +42,17 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
     Mat mRgba;
     Mat mRgbaF;
     Mat mRgbaT;
-    int count =0 ;
+    int count =0;
+    private static final String TAG = "perfect-angle";
     protected CameraBridgeViewBase mCamera;
 
-    //Create load callback
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
             switch (status) {
                 case LoaderCallbackInterface.SUCCESS:
                 {
-                    Log.i("loading openCv", "OpenCV loaded successfully");
+                    Log.i(TAG, "OpenCV loaded successfully");
                     mCamera.enableView();
                 } break;
                 default:
@@ -74,7 +74,7 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Log.i("onCreate", "called onCreate");
+        Log.i(TAG, "called onCreate");
         super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mCamera = (CameraBridgeViewBase) findViewById(R.id.OpenCVCamera);
@@ -85,8 +85,8 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int height = displayMetrics.heightPixels;
         int width = displayMetrics.widthPixels;
-        Log.i("zzzzzzzz", "Width " + width);
-        Log.i("zzzzzzzz", "height " + height);
+        Log.i(TAG, "Width " + width);
+        Log.i(TAG, "height " + height);
 
     }
 
@@ -95,30 +95,25 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         mRgba = new Mat(height, width, CvType.CV_8UC4);
         mRgbaF = new Mat(height, width, CvType.CV_8UC4);
         mRgbaT = new Mat(width, width, CvType.CV_8UC4);
-        Log.i("camera started","");
+        Log.i(TAG,"onCameraViewStarted");
     }
 
     @Override
     public void onCameraViewStopped() {
-        Log.i("camera stopped","");
+        Log.i(TAG,"onCameraViewStopped");
     }
 
     @Override
     public Mat onCameraFrame(final CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-        Log.i("loop","Camera frame iteration ");
-
-
-
-       mRgbaF =  runCamera(inputFrame);
+//        Log.i(TAG,"Camera frame iteration ");
+        mRgbaF =  runCamera(inputFrame);
         return mRgbaF;
-
     }
 
     public Mat runCamera(CameraBridgeViewBase.CvCameraViewFrame inputFrame)
     {
         double maxArea=0;
         Point first = new Point(0,0) ,second = new Point(0,0) ;
-
         Mat edges = new Mat();
         List<MatOfPoint> contours = new ArrayList<>();
         mRgba = inputFrame.rgba();
@@ -136,47 +131,43 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
                 maxArea = rect.area() ;
                 first  = new Point(rect.x,rect.y);
                 second = new Point(rect.x+rect.width,rect.y+rect.height);
-
-                Log.i("Condition","Entered If Condition");
+//                Log.i(TAG,"Entered If Condition");
             }
-
-            Log.i("iteration","Loop has passed");
-//
+//            Log.i(TAG,"Loop has passed");
         }
-        Log.i("finish","Loop has finished");
+//        Log.i(TAG,"Loop has finished");
         Imgproc.rectangle(mRgba,first, second,new Scalar(255.0,255.0,255.0));
-       if (first.x >= 250 && first.x <=350   && first.y >=200 && first.y <= 300  &&
+        if (first.x >= 250 && first.x <=350   && first.y >=200 && first.y <= 300  &&
                second.x >= 530 && second.x <=650   && second.y >=500 && second.y <= 600)
-       {
-           Log.i("amr" , "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
+        {
+           Log.i(TAG , "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
            takePicture(mRgba);
-       }
-        Log.i("coordinates" , "First Point"+first.x +" Second Point"+first.y);
-        Log.i("coordinates" , "Second Point"+second.x +" Second Point"+second.y);
-
-
-
+        }
+//        Log.i(TAG , "First Point"+first.x +" Second Point"+first.y);
+//        Log.i(TAG , "Second Point"+second.x +" Second Point"+second.y);
         mRgba.convertTo(mRgbaF,CvType.CV_8U);
-
         return  mRgbaF ;
     }
-public void takePicture(Mat tmp)
-    {
-    Bitmap bmp ;
-    try {
-        bmp = Bitmap.createBitmap(tmp.cols(), tmp.rows(), Bitmap.Config.ARGB_8888);
-        Utils.matToBitmap(tmp, bmp);
 
-        writeToSDFile(bmp);
+    public void takePicture(Mat tmp)
+    {
+        Bitmap bmp ;
+        try {
+            bmp = Bitmap.createBitmap(tmp.cols(), tmp.rows(), Bitmap.Config.ARGB_8888);
+            Utils.matToBitmap(tmp, bmp);
+
+            writeToSDFile(bmp);
+        }
+        catch (CvException e){Log.d("Exception",e.getMessage());}
     }
-    catch (CvException e){Log.d("Exception",e.getMessage());}
-}
 
     private void writeToSDFile(Bitmap bitmapImage)
     {
         File root = android.os.Environment.getExternalStorageDirectory();
+        Log.i(TAG , "root: " + root);
         File dir = new File (root.getAbsolutePath() + "/bunnyfufu");
-        dir.mkdirs();
+        dir.mkdirs(); //path: /storage/emulated/0/bunnyfufu
+        Log.i(TAG , "path: " + dir);
         File mypath = new File(dir, "all.jpg");  // el esm el hy3mlha save
 
         FileOutputStream fos = null;
@@ -212,8 +203,6 @@ public void takePicture(Mat tmp)
     public void onPointerCaptureChanged(boolean hasCapture) {
 
     }
-
-
 }
 
 
