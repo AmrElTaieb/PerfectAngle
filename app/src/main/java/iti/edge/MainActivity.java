@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
+import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -106,31 +107,7 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
     public Mat onCameraFrame(final CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
         Log.i("loop","Camera frame iteration ");
 
-//        Handler handler = new Handler(Looper.getMainLooper());
-//
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//
-//            }
-//        }, 500 );
-//        count++;
-//        if(count > 25 )
-//        {
-//            count =0 ;
-//          mRgba =  runCamera(inputFrame);
-//        }
-//        else if (count > 15)
-//        {
-//            mRgba =  runCamera(inputFrame);
-//        }
-//        else
-//        {
-//            mRgba = inputFrame.rgba();
-//            Imgproc.cvtColor(mRgba,  mRgba, Imgproc.COLOR_BGR2GRAY);
-//            Imgproc.Canny(mRgba, mRgba, 30, 90);
-//
-//        }
+
 
        mRgbaF =  runCamera(inputFrame);
         return mRgbaF;
@@ -149,8 +126,6 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         Imgproc.GaussianBlur(mRgba, mRgba, new Size(5, 5), 0);
         Imgproc.Canny(mRgba, mRgba, 30, 90);
         Imgproc.findContours(mRgba,contours,edges,Imgproc.RETR_LIST,Imgproc.CHAIN_APPROX_SIMPLE);
-
-
         Iterator<MatOfPoint> iterator = contours.iterator();
         Rect rect ;
         while (iterator.hasNext()){
@@ -166,23 +141,17 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
             }
 
             Log.i("iteration","Loop has passed");
-//            Imgproc.circle(mRgba,new Point(rect.x,rect.y),5,new Scalar(200,0,0),2);
-//            Imgproc.circle(mRgba,new Point(rect.x+rect.width,rect.y),5,new Scalar(200,0,0),2);
-//            Imgproc.circle(mRgba,new Point(rect.x,rect.y+rect.height),5,new Scalar(200,0,0),2);
-//            Imgproc.circle(mRgba,new Point(rect.x+rect.width,rect.y+rect.height),5,new Scalar(200,0,0),2);
+//
         }
         Log.i("finish","Loop has finished");
         Imgproc.rectangle(mRgba,first, second,new Scalar(255.0,255.0,255.0));
-       if (first.x >= 10 && first.x <=110   && first.y >=20 && first.y <= 120  &&
-               second.x >= 600 && second.x <=700   && second.y >=400 && second.y <= 500)
+       if (first.x >= 250 && first.x <=350   && first.y >=200 && first.y <= 300  &&
+               second.x >= 530 && second.x <=650   && second.y >=500 && second.y <= 600)
        {
            Log.i("amr" , "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
            takePicture(mRgba);
        }
-
-
-
-         Log.i("coordinates" , "First Point"+first.x +" Second Point"+first.y);
+        Log.i("coordinates" , "First Point"+first.x +" Second Point"+first.y);
         Log.i("coordinates" , "Second Point"+second.x +" Second Point"+second.y);
 
 
@@ -193,17 +162,38 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
     }
 public void takePicture(Mat tmp)
     {
-    Bitmap bmp = null;
+    Bitmap bmp ;
     try {
-        //Imgproc.cvtColor(seedsImage, tmp, Imgproc.COLOR_RGB2BGRA);
-        //  Imgproc.cvtColor(seedsImage, tmp, Imgproc.COLOR_GRAY2RGBA, 4);
         bmp = Bitmap.createBitmap(tmp.cols(), tmp.rows(), Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(tmp, bmp);
-        saveToInternalStorage(bmp) ;
+
+        writeToSDFile(bmp);
     }
     catch (CvException e){Log.d("Exception",e.getMessage());}
 }
 
+    private void writeToSDFile(Bitmap bitmapImage)
+    {
+        File root = android.os.Environment.getExternalStorageDirectory();
+        File dir = new File (root.getAbsolutePath() + "/bunnyfufu");
+        dir.mkdirs();
+        File mypath = new File(dir, "all.jpg");  // el esm el hy3mlha save
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(mypath);
+            // Use the compress method on the BitMap object to write image to the OutputStream
+            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+              fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     @Override
     protected void onPause() {
         //Disable camera
@@ -221,32 +211,6 @@ public void takePicture(Mat tmp)
     @Override
     public void onPointerCaptureChanged(boolean hasCapture) {
 
-    }
-    private String saveToInternalStorage(Bitmap bitmapImage)
-    {
-
-        ContextWrapper cw = new ContextWrapper(this);
-        // path to /data/data/yourapp/app_data/imageDir
-        File directory = cw.getDir("imageDir", Context.MODE_PRIVATE);
-        // Create imageDir
-        File mypath = new File(directory, "all.jpg");
-
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(mypath);
-            // Use the compress method on the BitMap object to write image to the OutputStream
-            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                fos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        Log.i("amr2",""+directory.getAbsolutePath());
-        return directory.getAbsolutePath();
     }
 
 
