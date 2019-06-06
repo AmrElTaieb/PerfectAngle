@@ -2,26 +2,21 @@ package iti.edge;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
-import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
+import android.view.MotionEvent;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Switch;
@@ -44,13 +39,11 @@ import org.opencv.imgproc.Imgproc;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.UUID;
 
-public class MainActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2 {
+public class CameraActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
     private static final String TAG = "perfect-angle";
     private static final int PERMISSION_REQUEST_CODE = 200;
@@ -125,11 +118,29 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         count = 1;
 
         faceOne = findViewById(R.id.face_one);
+        faceOne.setPressed(true);
         faceOne.setOnClickListener((v)->{
             detectionPoint = new Point(1, 1);
             detectionArea = 1;
             count = 1;
 //            takePicture(mRgba);
+        });
+        faceOne.setOnTouchListener((v, event) -> {
+            faceOne.setPressed(true);
+            if(faceTwo.isPressed())
+            {
+                faceTwo.setPressed(false);
+            } else if(faceThree.isPressed())
+            {
+                faceThree.setPressed(false);
+            } else if(faceFour.isPressed())
+            {
+                faceFour.setPressed(false);
+            } else
+            {
+                faceFive.setPressed(false);
+            }
+            return true;
         });
         faceTwo = findViewById(R.id.face_two);
         faceTwo.setOnClickListener((v)->{
@@ -137,11 +148,45 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
             detectionArea = 2;
             count = 2;
         });
+        faceTwo.setOnTouchListener((v, event) -> {
+            faceTwo.setPressed(true);
+            if(faceOne.isPressed())
+            {
+                faceOne.setPressed(false);
+            } else if(faceThree.isPressed())
+            {
+                faceThree.setPressed(false);
+            } else if(faceFour.isPressed())
+            {
+                faceFour.setPressed(false);
+            } else
+            {
+                faceFive.setPressed(false);
+            }
+            return true;
+        });
         faceThree = findViewById(R.id.face_three);
         faceThree.setOnClickListener((v)->{
             detectionPoint = new Point(3, 3);
             detectionArea = 3;
             count = 3;
+        });
+        faceThree.setOnTouchListener((v, event) -> {
+            faceThree.setPressed(true);
+            if(faceOne.isPressed())
+            {
+                faceOne.setPressed(false);
+            } else if(faceTwo.isPressed())
+            {
+                faceTwo.setPressed(false);
+            } else if(faceFour.isPressed())
+            {
+                faceFour.setPressed(false);
+            } else
+            {
+                faceFive.setPressed(false);
+            }
+            return true;
         });
         faceFour = findViewById(R.id.face_four);
         faceFour.setOnClickListener((v)->{
@@ -149,11 +194,46 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
             detectionArea = 4;
             count = 4;
         });
+        faceFour.setOnTouchListener((v, event) -> {
+            faceFour.setPressed(true);
+            if(faceOne.isPressed())
+            {
+                faceOne.setPressed(false);
+            } else if(faceTwo.isPressed())
+            {
+                faceTwo.setPressed(false);
+            } else if(faceThree.isPressed())
+            {
+                faceThree.setPressed(false);
+            } else
+            {
+                faceFive.setPressed(false);
+            }
+            return true;
+        });
         faceFive = findViewById(R.id.face_five);
         faceFive.setOnClickListener((v)->{
             detectionPoint = new Point(5, 5);
             detectionArea = 5;
             count = 5;
+            faceFive.setPressed(true);
+        });
+        faceFive.setOnTouchListener((v, event) -> {
+            faceFive.setPressed(true);
+            if(faceOne.isPressed())
+            {
+                faceOne.setPressed(false);
+            } else if(faceTwo.isPressed())
+            {
+                faceTwo.setPressed(false);
+            } else if(faceThree.isPressed())
+            {
+                faceThree.setPressed(false);
+            } else
+            {
+                faceFour.setPressed(false);
+            }
+            return true;
         });
         autoCapture = findViewById(R.id.auto_capture);
         autoCapture.setChecked(true);
@@ -228,7 +308,7 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         }
     }
     private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
-        new AlertDialog.Builder(MainActivity.this)
+        new AlertDialog.Builder(CameraActivity.this)
                 .setMessage(message)
                 .setPositiveButton("OK", okListener)
                 .setNegativeButton("Cancel", null)
@@ -263,11 +343,14 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         }
 //        Log.i(TAG,"Loop has finished");
         Imgproc.rectangle(mRgba,first, second,new Scalar(255.0,255.0,255.0));
-        if (first.x >= 250 && first.x <=350   && first.y >=200 && first.y <= 300  &&
-               second.x >= 530 && second.x <=650   && second.y >=500 && second.y <= 600)
+        if(autoCapture.isChecked())
         {
-           Log.i(TAG , "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
-           takePicture(mRgba);
+            if (first.x >= 250 && first.x <=350   && first.y >=200 && first.y <= 300  &&
+                    second.x >= 530 && second.x <=650   && second.y >=500 && second.y <= 600)
+            {
+                Log.i(TAG , "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
+                takePicture(mRgba);
+            }
         }
 //        Log.i(TAG , "First Point"+first.x +" Second Point"+first.y);
 //        Log.i(TAG , "Second Point"+second.x +" Second Point"+second.y);
