@@ -139,6 +139,7 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
             count = 5;
         });
         autoCapture = findViewById(R.id.auto_capture);
+        autoCapture.setChecked(true);
     }
 
     @Override
