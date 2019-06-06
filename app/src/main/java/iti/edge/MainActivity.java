@@ -1,16 +1,23 @@
 package iti.edge;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.MediaStore;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
@@ -18,6 +25,7 @@ import android.view.SurfaceView;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -45,6 +53,7 @@ import java.util.UUID;
 public class MainActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
     private static final String TAG = "perfect-angle";
+    private static final int PERMISSION_REQUEST_CODE = 200;
 
     protected CameraBridgeViewBase mCamera;
 
@@ -87,6 +96,12 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if(!checkPermission())
+        {
+            requestPermission();
+        }
+
         setContentView(R.layout.activity_main);
         Log.i(TAG, "called onCreate");
         super.onCreate(savedInstanceState);
@@ -146,7 +161,64 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         return mRgbaF;
     }
 
-    public Mat runCamera(CameraBridgeViewBase.CvCameraViewFrame inputFrame)
+    private boolean checkPermission() {
+        if ((ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) || (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) || (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED)) {
+            // Permission is not granted
+            return false;
+        }
+        return true;
+    }
+
+    private void requestPermission() {
+
+        ActivityCompat.requestPermissions(this,
+                new String[]{Manifest.permission.CAMERA,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                            Manifest.permission.READ_EXTERNAL_STORAGE},
+                PERMISSION_REQUEST_CODE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case PERMISSION_REQUEST_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(getApplicationContext(), "Permission Granted", Toast.LENGTH_SHORT).show();
+
+                    // main logic
+                } else {
+                    Toast.makeText(getApplicationContext(), "Permission Denied", Toast.LENGTH_SHORT).show();
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                                != PackageManager.PERMISSION_GRANTED) {
+                            showMessageOKCancel("You need to allow access permissions",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                                requestPermission();
+                                            }
+                                        }
+                                    });
+                        }
+                    }
+                }
+                break;
+        }
+    }
+    private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
+        new AlertDialog.Builder(MainActivity.this)
+                .setMessage(message)
+                .setPositiveButton("OK", okListener)
+                .setNegativeButton("Cancel", null)
+                .create()
+                .show();
+    }
+
+    private Mat runCamera(CameraBridgeViewBase.CvCameraViewFrame inputFrame)
     {
         double maxArea=0;
         Point first = new Point(0,0) ,second = new Point(0,0) ;
@@ -185,7 +257,7 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         return  mRgbaF ;
     }
 
-    public void takePicture(Mat tmp)
+    private void takePicture(Mat tmp)
     {
         Bitmap bmp ;
         try {
