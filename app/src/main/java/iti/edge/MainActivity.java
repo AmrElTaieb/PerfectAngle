@@ -177,7 +177,7 @@ public void takePicture(Mat tmp)
         File root = android.os.Environment.getExternalStorageDirectory();
         File dir = new File (root.getAbsolutePath() + "/bunnyfufu");
         dir.mkdirs();
-        File mypath = new File(dir, "all.jpg");  // el esm el hy3mlha save
+        File mypath = new File(dir, "Another.jpg");  // el esm el hy3mlha save
 
         FileOutputStream fos = null;
         try {
