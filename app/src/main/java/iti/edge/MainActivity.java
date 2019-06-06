@@ -60,6 +60,9 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
     private Mat mRgba;
     private Mat mRgbaF;
     private Mat mRgbaT;
+
+    private Point detectionPoint;
+    private int detectionArea;
     private int count = 0;
 
     private Button faceOne;
@@ -117,25 +120,39 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         Log.i(TAG, "Width " + width);
         Log.i(TAG, "Height " + height);
 
+        detectionPoint = new Point(1, 1);
+        detectionArea = 1;
+        count = 1;
+
         faceOne = findViewById(R.id.face_one);
         faceOne.setOnClickListener((v)->{
+            detectionPoint = new Point(1, 1);
+            detectionArea = 1;
             count = 1;
 //            takePicture(mRgba);
         });
         faceTwo = findViewById(R.id.face_two);
         faceTwo.setOnClickListener((v)->{
+            detectionPoint = new Point(2, 2);
+            detectionArea = 2;
             count = 2;
         });
         faceThree = findViewById(R.id.face_three);
         faceThree.setOnClickListener((v)->{
+            detectionPoint = new Point(3, 3);
+            detectionArea = 3;
             count = 3;
         });
         faceFour = findViewById(R.id.face_four);
         faceFour.setOnClickListener((v)->{
+            detectionPoint = new Point(4, 4);
+            detectionArea = 4;
             count = 4;
         });
         faceFive = findViewById(R.id.face_five);
         faceFive.setOnClickListener((v)->{
+            detectionPoint = new Point(5, 5);
+            detectionArea = 5;
             count = 5;
         });
         autoCapture = findViewById(R.id.auto_capture);
