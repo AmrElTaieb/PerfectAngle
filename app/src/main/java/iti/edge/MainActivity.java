@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.graphics.Bitmap;
+import android.media.MediaScannerConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -14,6 +16,8 @@ import android.util.Log;
 import android.view.Display;
 import android.view.SurfaceView;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.Switch;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -39,12 +43,22 @@ import java.util.List;
 import java.util.UUID;
 
 public class MainActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2 {
-    Mat mRgba;
-    Mat mRgbaF;
-    Mat mRgbaT;
-    int count =0;
+
     private static final String TAG = "perfect-angle";
+
     protected CameraBridgeViewBase mCamera;
+
+    private Mat mRgba;
+    private Mat mRgbaF;
+    private Mat mRgbaT;
+    private int count = 0;
+
+    private Button faceOne;
+    private Button faceTwo;
+    private Button faceThree;
+    private Button faceFour;
+    private Button faceFive;
+    private Switch autoCapture;
 
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -86,8 +100,30 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
         int height = displayMetrics.heightPixels;
         int width = displayMetrics.widthPixels;
         Log.i(TAG, "Width " + width);
-        Log.i(TAG, "height " + height);
+        Log.i(TAG, "Height " + height);
 
+        faceOne = findViewById(R.id.face_one);
+        faceOne.setOnClickListener((v)->{
+            count = 1;
+//            takePicture(mRgba);
+        });
+        faceTwo = findViewById(R.id.face_two);
+        faceTwo.setOnClickListener((v)->{
+            count = 2;
+        });
+        faceThree = findViewById(R.id.face_three);
+        faceThree.setOnClickListener((v)->{
+            count = 3;
+        });
+        faceFour = findViewById(R.id.face_four);
+        faceFour.setOnClickListener((v)->{
+            count = 4;
+        });
+        faceFive = findViewById(R.id.face_five);
+        faceFive.setOnClickListener((v)->{
+            count = 5;
+        });
+        autoCapture = findViewById(R.id.auto_capture);
     }
 
     @Override
@@ -163,27 +199,28 @@ public class MainActivity extends Activity implements CameraBridgeViewBase.CvCam
 
     private void writeToSDFile(Bitmap bitmapImage)
     {
-        File root = android.os.Environment.getExternalStorageDirectory();
-        Log.i(TAG , "root: " + root);
-        File dir = new File (root.getAbsolutePath() + "/bunnyfufu");
-        dir.mkdirs(); //path: /storage/emulated/0/bunnyfufu
+        String root = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString();
+        File dir = new File(root + "/PerfectAngle");
+        dir.mkdirs();
         Log.i(TAG , "path: " + dir);
-        File mypath = new File(dir, "all.jpg");  // el esm el hy3mlha save
-
-        FileOutputStream fos = null;
+        String fname = "temp.jpg";
+        File file = new File(dir, fname);
+        if (file.exists())
+            file.delete();
         try {
-            fos = new FileOutputStream(mypath);
-            // Use the compress method on the BitMap object to write image to the OutputStream
-            bitmapImage.compress(Bitmap.CompressFormat.PNG, 100, fos);
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            try {
-              fos.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            FileOutputStream out = new FileOutputStream(file);
+            bitmapImage.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            out.flush();
+            out.close();
         }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        MediaScannerConnection.scanFile(this, new String[]{file.toString()}, null,
+                (path, uri) -> {
+                    Log.i(TAG, "Scanned " + path + ":");
+                    Log.i(TAG, "-> uri=" + uri);
+                });
     }
     @Override
     protected void onPause() {
