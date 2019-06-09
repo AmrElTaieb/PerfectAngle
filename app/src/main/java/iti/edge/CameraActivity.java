@@ -14,13 +14,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.SurfaceView;
-import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -50,6 +47,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     private static final String TAG = "perfect-angle";
     private static final int PERMISSION_REQUEST_CODE = 200;
 
+    ImageView imageView;
     protected CameraBridgeViewBase mCamera;
     boolean firstScreen = false;
     boolean secondScreen = false;
@@ -117,6 +115,8 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         int width = displayMetrics.widthPixels;
         Log.i(TAG, "Width " + width);
         Log.i(TAG, "Height " + height);
+
+        imageView = (ImageView) findViewById(R.id.imageView);
 
         // start of rana's code
 //        final ImageView effect_camera= (ImageView)findViewById(R.id.imageView);
@@ -287,9 +287,16 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     @Override
     public Mat onCameraFrame(final CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
 
-        mRgbaF =  runCamera(inputFrame);
-       // mRgbaF = runCameraTwo(inputFrame);
-        return mRgbaF;
+        Mat result=new Mat() ;
+        Mat frameToMat= inputFrame.rgba();
+        if(faceOne.isPressed()) {
+            mRgbaF = runCamera(frameToMat);
+            result=inputFrame.rgba();
+        }
+        if(faceTwo.isPressed()) {
+             result = runCameraTwo(inputFrame);
+        }
+        return result;
     }
 
     private boolean checkPermission() {
@@ -354,7 +361,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         Mat input = inputFrame.gray();
         Mat circles = new Mat();
         Imgproc.blur(input, input, new Size(7, 7), new Point(2, 2));
-        Imgproc.HoughCircles(input, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 100, 100, 90, 0, 1000);
+        Imgproc.HoughCircles(input, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 200, 100, 90, 70, 1000);
 
         Log.i(TAG, String.valueOf("size: " + circles.cols()) + ", " + String.valueOf(circles.rows()));
 
@@ -379,14 +386,23 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         return inputFrame.rgba();
     }
 
-
-    private Mat runCamera(CameraBridgeViewBase.CvCameraViewFrame inputFrame)
+    private Mat runCamera(Mat inputFrame)
     {
+      //getting coordinates of the image on screen
+        int[] values = new int[2]; //top left corner
+        imageView.getLocationOnScreen(values);
+        float density = getResources().getDisplayMetrics().density;
+        int widthDp = (int)(imageView.getWidth() / density); // X of the right point
+        int leftDp = (int)(imageView.getLeft() / density);   //left point
+        Log.i("X & Y & width & left",values[0]+" "+values[1]+" "+widthDp + " " + leftDp) ;
+
+
+
         double maxArea=0;
         Point first = new Point(0,0) ,second = new Point(0,0) ;
         Mat edges = new Mat();
         List<MatOfPoint> contours = new ArrayList<>();
-        mRgba = inputFrame.rgba();
+        mRgba = inputFrame;
         Imgproc.cvtColor(mRgba,  mRgba, Imgproc.COLOR_BGR2GRAY);
         Imgproc.GaussianBlur(mRgba, mRgba, new Size(5, 5), 0);
         Imgproc.Canny(mRgba, mRgba, 30, 90);
