@@ -50,6 +50,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     private static final String TAG = "perfect-angle";
     private static final int PERMISSION_REQUEST_CODE = 200;
 
+    ImageView imageView;
     protected CameraBridgeViewBase mCamera;
     boolean firstScreen = false;
     boolean secondScreen = false;
@@ -111,13 +112,14 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         mCamera.setVisibility(SurfaceView.VISIBLE);
         mCamera.setCvCameraViewListener(this);
 
-       // mCamera.setMaxFrameSize(3872, 2592);
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int height = displayMetrics.heightPixels;
         int width = displayMetrics.widthPixels;
         Log.i(TAG, "Width " + width);
         Log.i(TAG, "Height " + height);
+
+        imageView = (ImageView) findViewById(R.id.imageView);
 
         // start of rana's code
 //        final ImageView effect_camera= (ImageView)findViewById(R.id.imageView);
@@ -288,11 +290,16 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     @Override
     public Mat onCameraFrame(final CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
 
-
-
-       // runCamera(inputFrame.rgba());
-        mRgbaF = runCameraTwo(inputFrame);
-        return inputFrame.rgba();
+        Mat result=new Mat() ;
+        Mat frameToMat= inputFrame.rgba();
+        if(faceOne.isPressed()) {
+            mRgbaF = runCamera(frameToMat);
+            result=inputFrame.rgba();
+        }
+        if(faceTwo.isPressed()) {
+             result = runCameraTwo(inputFrame);
+        }
+        return result;
     }
 
     private boolean checkPermission() {
@@ -406,9 +413,18 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         return inputFrame.rgba();
     }
 
-
-    private void runCamera(Mat inputFrame)
+    private Mat runCamera(Mat inputFrame)
     {
+      //getting coordinates of the image on screen
+        int[] values = new int[2]; //top left corner
+        imageView.getLocationOnScreen(values);
+        float density = getResources().getDisplayMetrics().density;
+        int widthDp = (int)(imageView.getWidth() / density); // X of the right point
+        int leftDp = (int)(imageView.getLeft() / density);   //left point
+        Log.i("X & Y & width & left",values[0]+" "+values[1]+" "+widthDp + " " + leftDp) ;
+
+
+
         double maxArea=0;
         Point first = new Point(0,0) ,second = new Point(0,0) ;
         Mat edges = new Mat();
@@ -445,7 +461,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
        Log.i(TAG , "First Point"+first.x +" Second Point"+first.y);
         Log.i(TAG , "Second Point"+second.x +" Second Point"+second.y);
 
-
+     return mRgba ;
     }
 
     private void takePicture(Mat tmp)
