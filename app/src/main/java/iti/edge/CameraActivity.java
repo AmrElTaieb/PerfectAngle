@@ -111,6 +111,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         mCamera.setVisibility(SurfaceView.VISIBLE);
         mCamera.setCvCameraViewListener(this);
 
+       // mCamera.setMaxFrameSize(3872, 2592);
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int height = displayMetrics.heightPixels;
@@ -287,9 +288,11 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     @Override
     public Mat onCameraFrame(final CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
 
-        mRgbaF =  runCamera(inputFrame);
-       // mRgbaF = runCameraTwo(inputFrame);
-        return mRgbaF;
+
+
+       // runCamera(inputFrame.rgba());
+        mRgbaF = runCameraTwo(inputFrame);
+        return inputFrame.rgba();
     }
 
     private boolean checkPermission() {
@@ -354,23 +357,47 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         Mat input = inputFrame.gray();
         Mat circles = new Mat();
         Imgproc.blur(input, input, new Size(7, 7), new Point(2, 2));
-        Imgproc.HoughCircles(input, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 100, 100, 90, 0, 1000);
+        Imgproc.HoughCircles(input, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 200, 100, 90, 70, 1000);
 
-        Log.i(TAG, String.valueOf("size: " + circles.cols()) + ", " + String.valueOf(circles.rows()));
+      //  Log.i(TAG, String.valueOf("size: " + circles.cols()) + ", " + String.valueOf(circles.rows()));
 
-        if (circles.cols() > 0 && circles.cols() <= 2) {
-            for (int x=0; x < Math.min(circles.cols(), 5); x++ ) {
+        double x1=0,x2=0,y1=0,y2=0;
+        double r1=0,r2=0 ;
+        if (circles.cols() == 2) {
+            for (int x=0; x < Math.min(circles.cols(), 5); x++ ) // so it doesnt catch more than 5 circles , in this case always 2
+            {
+           //     Log.i(TAG,"Min of "+circles.cols() +" and 5 is "+ Math.min(circles.cols(), 5));
                 double circleVec[] = circles.get(0, x);
+
 
                 if (circleVec == null) {
                     break;
                 }
 
-                Point center = new Point((int) circleVec[0], (int) circleVec[1]);
-                int radius = (int) circleVec[2];
+                if(x == 0)
+                {
+                    x1 = circleVec[0];
+                    y1 = circleVec[1];
+                    r1 = circleVec[2];
 
-                Imgproc.circle(input, center, 3, new Scalar(255, 255, 255), 5);
-                Imgproc.circle(input, center, radius, new Scalar(255, 255, 255), 2);
+                }
+                else if (x == 1 )
+                {
+                    x2 = circleVec[0];
+                    y2 = circleVec[1];
+                    r2 = circleVec[2];
+                }
+
+                Log.i(TAG, "circle vec 0: " + circleVec[0] + " cirlce vec 1 :  " + circleVec[1] +" circle vec 2 :"+circleVec[2]);
+
+               // Imgproc.circle(input, center, 3, new Scalar(255, 255, 255), 5);
+               // Imgproc.circle(input, center, radius, new Scalar(255, 255, 255), 2);
+            }
+           if(y1 >= y2 - 35 && y1 <= y2+35 )
+
+            {
+                Imgproc.circle(input, new Point(x1, y1), (int) r1, new Scalar(255, 255, 255), 2);
+                Imgproc.circle(input, new Point(x2, y2), (int) r2, new Scalar(255, 255, 255), 2);
             }
         }
 
@@ -380,13 +407,13 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     }
 
 
-    private Mat runCamera(CameraBridgeViewBase.CvCameraViewFrame inputFrame)
+    private void runCamera(Mat inputFrame)
     {
         double maxArea=0;
         Point first = new Point(0,0) ,second = new Point(0,0) ;
         Mat edges = new Mat();
         List<MatOfPoint> contours = new ArrayList<>();
-        mRgba = inputFrame.rgba();
+        mRgba = inputFrame;
         Imgproc.cvtColor(mRgba,  mRgba, Imgproc.COLOR_BGR2GRAY);
         Imgproc.GaussianBlur(mRgba, mRgba, new Size(5, 5), 0);
         Imgproc.Canny(mRgba, mRgba, 30, 90);
@@ -415,10 +442,9 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
                 takePicture(mRgba);
             }
         }
-//        Log.i(TAG , "First Point"+first.x +" Second Point"+first.y);
-//        Log.i(TAG , "Second Point"+second.x +" Second Point"+second.y);
-        mRgba.convertTo(mRgbaF,CvType.CV_8U);
-        return  mRgbaF ;
+       Log.i(TAG , "First Point"+first.x +" Second Point"+first.y);
+        Log.i(TAG , "Second Point"+second.x +" Second Point"+second.y);
+
 
     }
 
