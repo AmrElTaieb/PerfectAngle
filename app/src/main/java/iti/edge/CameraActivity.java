@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -52,8 +53,6 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
 
     ImageView imageView;
     protected CameraBridgeViewBase mCamera;
-    boolean firstScreen = false;
-    boolean secondScreen = false;
 
     private Mat mRgba;
     private Mat mRgbaF;
@@ -119,33 +118,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         Log.i(TAG, "Width " + width);
         Log.i(TAG, "Height " + height);
 
-        imageView = (ImageView) findViewById(R.id.imageView);
-
-        // start of rana's code
-//        final ImageView effect_camera= (ImageView)findViewById(R.id.imageView);
-//
-//        effect_camera.post(new Runnable(){
-//            @Override
-//            public void run(){
-//
-//                RelativeLayout.LayoutParams lp= (RelativeLayout.LayoutParams)effect_camera.getLayoutParams();
-//                int percentHeight = (int) (height*.8);
-//                int percentWidth= (int) (width*.8);
-//                lp.height=percentHeight;
-//                lp.width=percentWidth;
-//                effect_camera.setLayoutParams(lp);
-//            }
-//        });
-//
-//
-//        mCamera.setVisibility(SurfaceView.VISIBLE);
-//        mCamera.setCvCameraViewListener(this);
-
-// end of rana's code
-
-
-
-
+        imageView = (ImageView) findViewById(R.id.imageView); //doaa bet7b el casting
         detectionPoint = new Point(1, 1);
         detectionArea = 1;
         count = 1;
@@ -288,18 +261,20 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     }
 
     @Override
-    public Mat onCameraFrame(final CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+    public Mat onCameraFrame( CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
 
         Mat result=new Mat() ;
         Mat frameToMat= inputFrame.rgba();
         if(faceOne.isPressed()) {
-            mRgbaF = runCamera(frameToMat);
+          //  mRgbaF = checkBackViewAngle(frameToMat);
+            mRgbaF = checkBackViewAngle(inputFrame);
             result=inputFrame.rgba();
         }
         if(faceTwo.isPressed()) {
-             result = runCameraTwo(inputFrame);
+             result = checkSideViewAngle(inputFrame);
         }
-        return result;
+      //  return result;
+       return mRgbaF ;
     }
 
     private boolean checkPermission() {
@@ -359,7 +334,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
                 .show();
     }
 
-    private Mat runCameraTwo(CameraBridgeViewBase.CvCameraViewFrame inputFrame)
+    private Mat checkSideViewAngle(CameraBridgeViewBase.CvCameraViewFrame inputFrame)
     {
         Mat input = inputFrame.gray();
         Mat circles = new Mat();
@@ -413,15 +388,35 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         return inputFrame.rgba();
     }
 
-    private Mat runCamera(Mat inputFrame)
+    private Mat checkBackViewAngle( CameraBridgeViewBase.CvCameraViewFrame inputFrame)
     {
       //getting coordinates of the image on screen
-        int[] values = new int[2]; //top left corner
-        imageView.getLocationOnScreen(values);
+//        int[] values = new int[2]; //top left corner
+//        imageView.getLocationOnScreen(values);
+
+//        int widthDp = (int)(imageView.getWidth() / density); // X of the right point
+//        int leftDp = (int)(imageView.getLeft() / density);   //left point
+//        int heightDp = (int)(imageView.getHeight() / density);
+//       // Log.i("qwerty"," X top left "+values[0]+" Y top left "+values[1] + leftDp +" heightDp =  " +heightDp) ;
+//        Log.i("qwerty","value[0] = "+values[0]);
+//        Log.i("qwerty","value[1] = "+values[1] +" and value[1]+ leftDp = "+ values[1] + leftDp);
+//        Log.i("qwerty","leftDp = "+leftDp);
+//        Log.i("qwerty","widthDp = "+widthDp);
+//        Log.i("qwerty","heightDp = "+heightDp);
+
         float density = getResources().getDisplayMetrics().density;
-        int widthDp = (int)(imageView.getWidth() / density); // X of the right point
-        int leftDp = (int)(imageView.getLeft() / density);   //left point
-        Log.i("X & Y & width & left",values[0]+" "+values[1]+" "+widthDp + " " + leftDp) ;
+        Log.i("qwerty","Density " + density);
+        float left = imageView.getLeft() /density;
+        float top = imageView.getTop()/density;
+        float right = imageView.getRight() /density;
+        float bottom = imageView.getBottom()/density;
+        Log.i("qwerty","Left " +left);
+        Log.i("qwerty","Top  " +top);
+        Log.i("qwerty","Right " +right);
+        Log.i("qwerty","Bottom " +bottom);
+        float imageArea = right * bottom ;
+
+
 
 
 
@@ -429,7 +424,8 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         Point first = new Point(0,0) ,second = new Point(0,0) ;
         Mat edges = new Mat();
         List<MatOfPoint> contours = new ArrayList<>();
-        mRgba = inputFrame;
+     //   mRgba = inputFrame;
+        mRgba = inputFrame.rgba();
         Imgproc.cvtColor(mRgba,  mRgba, Imgproc.COLOR_BGR2GRAY);
         Imgproc.GaussianBlur(mRgba, mRgba, new Size(5, 5), 0);
         Imgproc.Canny(mRgba, mRgba, 30, 90);
@@ -449,18 +445,23 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         }
 
         Imgproc.rectangle(mRgba,first, second,new Scalar(255.0,255.0,255.0));
+        double contourArea = (second.x - first.x ) * (second.y - first.y) ;
         if(autoCapture.isChecked())
         {
-            if (first.x >= 250 && first.x <=350   && first.y >=200 && first.y <= 300  &&
-                    second.x >= 530 && second.x <=650   && second.y >=500 && second.y <= 600)
+
+
+            if (imageArea >= contourArea -40000 && imageArea <= contourArea + 40000)
             {
                 Log.i(TAG , "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
                 takePicture(mRgba);
             }
         }
-       Log.i(TAG , "First Point"+first.x +" Second Point"+first.y);
-        Log.i(TAG , "Second Point"+second.x +" Second Point"+second.y);
-
+        Log.i(TAG,"Area of contour = "+contourArea);
+        Log.i(TAG,"Area of image = "+imageArea);
+        Log.i(TAG,"Area of Screnn = "+ (1196*720));
+        Log.i(TAG , "First Point X"+first.x +" First Point Y"+first.y);
+        Log.i(TAG , "Second Point X"+second.x +" Second Point Y"+second.y);
+       // mRgba.convertTo(mRgbaF,CvType.CV_8U);
      return mRgba ;
     }
 
