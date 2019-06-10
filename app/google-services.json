@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "974295429946",
+    "firebase_url": "https://perfectangle-f065f.firebaseio.com",
+    "project_id": "perfectangle-f065f",
+    "storage_bucket": "perfectangle-f065f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:974295429946:android:587671d30c149b7d",
+        "android_client_info": {
+          "package_name": "iti.edge"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "974295429946-0c6otvt19t8c2odbpi71tah737nojejn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "iti.edge",
+            "certificate_hash": "0ab3f481af86f5e968c1900c625c4d8448781944"
+          }
+        },
+        {
+          "client_id": "974295429946-olg3500g9nf75d916gtdvuh1155umgec.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxjBSNYjMhCzLKW9HMFYKfTT8Gx_TrAgQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "974295429946-olg3500g9nf75d916gtdvuh1155umgec.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
