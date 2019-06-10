@@ -343,8 +343,8 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
 
       //  Log.i(TAG, String.valueOf("size: " + circles.cols()) + ", " + String.valueOf(circles.rows()));
 
-        double x1=0,x2=0,y1=0,y2=0;
-        double r1=0,r2=0 ;
+        double x1=0,x2=0,y1=0,y2=0;  // coordinates for the circle
+        double r1=0,r2=0 ;           // radius of the circle
         if (circles.cols() == 2) {
             for (int x=0; x < Math.min(circles.cols(), 5); x++ ) // so it doesnt catch more than 5 circles , in this case always 2
             {
@@ -452,7 +452,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
 
             if (imageArea >= contourArea -40000 && imageArea <= contourArea + 40000)
             {
-                Log.i(TAG , "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
+                Log.i(TAG , "Photo captured (Success)");
                 takePicture(mRgba);
             }
         }
