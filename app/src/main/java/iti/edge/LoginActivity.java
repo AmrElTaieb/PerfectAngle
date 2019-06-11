@@ -184,3 +184,5 @@ public class LoginActivity extends AppCompatActivity {
     }
 
 }
+
+//FirebaseAuth.getInstance().signOut();
