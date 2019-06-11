@@ -108,10 +108,14 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         setContentView(R.layout.activity_main);
         logoutBtn = findViewById(R.id.btnLogout);
         logoutBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
+                @Override
             public void onClick(View v) {
                 FirebaseAuth.getInstance().signOut();
-            }
+                Log.i(TAG, "called signout");
+                CameraActivity.this.finish();
+                Log.i(TAG, "after finish");
+                }
+
         });
         Log.i(TAG, "called onCreate");
         super.onCreate(savedInstanceState);
