@@ -104,7 +104,6 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
             requestPermission();
         }
 
-
         setContentView(R.layout.activity_main);
         logoutBtn = findViewById(R.id.btnLogout);
         logoutBtn.setOnClickListener(new View.OnClickListener() {
