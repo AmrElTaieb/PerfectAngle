@@ -71,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 if(mAuth.getCurrentUser()!=null)
                 {
-                    startActivity(new Intent(LoginActivity.this,MainActivity.class));
+                    startActivity(new Intent(LoginActivity.this,CameraActivity.class));
                 }
 
             }
@@ -95,7 +95,7 @@ public class LoginActivity extends AppCompatActivity {
 
                                         Toast.makeText(LoginActivity.this, "Sign in is successfull.",
                                                 Toast.LENGTH_SHORT).show();
-                                        startActivity(new Intent(LoginActivity.this,MainActivity.class));
+                                        startActivity(new Intent(LoginActivity.this,CameraActivity.class));
                                         //   updateUI(user);
                                     }
                                     else
@@ -185,4 +185,3 @@ public class LoginActivity extends AppCompatActivity {
 
 }
 
-//FirebaseAuth.getInstance().signOut();

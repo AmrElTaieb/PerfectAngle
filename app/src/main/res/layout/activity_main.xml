@@ -4,20 +4,129 @@
     xmlns:opencv="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
+    tools:context=".CameraActivity"
     >
-    <org.opencv.android.JavaCameraView
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:visibility="gone"
-        android:id="@+id/OpenCVCamera"
-        opencv:show_fps="true"
-        opencv:camera_id="any" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@mipmap/ic_launcher" />
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <org.opencv.android.JavaCameraView
+            android:id="@+id/OpenCVCamera"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:visibility="gone"
+            opencv:camera_id="any"
+            opencv:show_fps="true" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/carback"
+
+
+            />
+
+    </RelativeLayout>
+
+
+
+    <LinearLayout
+        android:id="@+id/bottom"
+        android:layout_width="80dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/defaultWritingColor"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:text="@string/auto_caputre_switch_label"/>
+
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:trackTint="@color/defaultWritingColor"
+            android:id="@+id/auto_capture"/>
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_margin="4dp"
+            android:background="@drawable/logout_button"
+            android:drawableRight="@drawable/ic_subdirectory_arrow_left_black_24dp"
+            android:gravity="center"
+            android:text="logout"
+            android:textColor="#7E9196"
+            android:textSize="15sp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/top"
+        android:layout_width="70dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentEnd="true"
+        android:orientation="vertical">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/face_one"
+            android:background="@drawable/custom_button"
+            android:textColor="@color/defaultWritingColor"
+            android:focusable="true"
+            android:layout_weight="1"
+            android:text="1" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/face_two"
+            android:background="@drawable/custom_button"
+            android:textColor="@color/defaultWritingColor"
+            android:focusable="true"
+            android:layout_weight="1"
+            android:text="2" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/face_three"
+            android:background="@drawable/custom_button"
+            android:textColor="@color/defaultWritingColor"
+            android:focusable="true"
+            android:layout_weight="1"
+            android:text="3" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/face_four"
+            android:background="@drawable/custom_button"
+            android:textColor="@color/defaultWritingColor"
+            android:focusable="true"
+            android:layout_weight="1"
+            android:text="4" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/face_five"
+            android:background="@drawable/custom_button"
+            android:textColor="@color/defaultWritingColor"
+            android:focusable="true"
+            android:layout_weight="1"
+            android:text="5" />
+
+    </LinearLayout>
 
 </RelativeLayout>
