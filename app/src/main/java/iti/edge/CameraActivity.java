@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
+import android.nfc.Tag;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -14,10 +15,13 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.SurfaceView;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -39,7 +43,6 @@ import org.opencv.imgproc.Imgproc;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -50,8 +53,6 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
 
     ImageView imageView;
     protected CameraBridgeViewBase mCamera;
-    boolean firstScreen = false;
-    boolean secondScreen = false;
 
     private Mat mRgba;
     private Mat mRgbaF;
@@ -117,33 +118,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         Log.i(TAG, "Width " + width);
         Log.i(TAG, "Height " + height);
 
-        imageView = (ImageView) findViewById(R.id.imageView);
-
-        // start of rana's code
-//        final ImageView effect_camera= (ImageView)findViewById(R.id.imageView);
-//
-//        effect_camera.post(new Runnable(){
-//            @Override
-//            public void run(){
-//
-//                RelativeLayout.LayoutParams lp= (RelativeLayout.LayoutParams)effect_camera.getLayoutParams();
-//                int percentHeight = (int) (height*.8);
-//                int percentWidth= (int) (width*.8);
-//                lp.height=percentHeight;
-//                lp.width=percentWidth;
-//                effect_camera.setLayoutParams(lp);
-//            }
-//        });
-//
-//
-//        mCamera.setVisibility(SurfaceView.VISIBLE);
-//        mCamera.setCvCameraViewListener(this);
-
-// end of rana's code
-
-
-
-
+        imageView = (ImageView) findViewById(R.id.imageView); //doaa bet7b el casting
         detectionPoint = new Point(1, 1);
         detectionArea = 1;
         count = 1;
@@ -286,19 +261,20 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     }
 
     @Override
-    public Mat onCameraFrame(final CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+    public Mat onCameraFrame( CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
 
         Mat result=new Mat() ;
         Mat frameToMat= inputFrame.rgba();
         if(faceOne.isPressed()) {
-            mRgbaF = runCamera(frameToMat);
+          //  mRgbaF = checkBackViewAngle(frameToMat);
+            mRgbaF = checkBackViewAngle(inputFrame);
             result=inputFrame.rgba();
         }
         if(faceTwo.isPressed()) {
-            mRgbaF =runCameraTwo(frameToMat);
-            result= inputFrame.rgba();
+             result = checkSideViewAngle(inputFrame);
         }
-        return result;
+      //  return result;
+       return mRgbaF ;
     }
 
     private boolean checkPermission() {
@@ -358,56 +334,98 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
                 .show();
     }
 
-    private Mat runCameraTwo(Mat inputFrame)
+    private Mat checkSideViewAngle(CameraBridgeViewBase.CvCameraViewFrame inputFrame)
     {
-        Mat input =inputFrame;
-        Imgproc.cvtColor(input,  input, Imgproc.COLOR_BGR2GRAY);
+        Mat input = inputFrame.gray();
         Mat circles = new Mat();
         Imgproc.blur(input, input, new Size(7, 7), new Point(2, 2));
         Imgproc.HoughCircles(input, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 200, 100, 90, 70, 1000);
 
-        Log.i(TAG, String.valueOf("size: " + circles.cols()) + ", " + String.valueOf(circles.rows()));
+      //  Log.i(TAG, String.valueOf("size: " + circles.cols()) + ", " + String.valueOf(circles.rows()));
 
-        if (circles.cols() > 0 && circles.cols() <= 2) {
-            for (int x=0; x < Math.min(circles.cols(), 5); x++ ) {
+        double x1=0,x2=0,y1=0,y2=0;  // coordinates for the circle
+        double r1=0,r2=0 ;           // radius of the circle
+        if (circles.cols() == 2) {
+            for (int x=0; x < Math.min(circles.cols(), 5); x++ ) // so it doesnt catch more than 5 circles , in this case always 2
+            {
+           //     Log.i(TAG,"Min of "+circles.cols() +" and 5 is "+ Math.min(circles.cols(), 5));
                 double circleVec[] = circles.get(0, x);
+
 
                 if (circleVec == null) {
                     break;
                 }
 
-                Point center = new Point((int) circleVec[0], (int) circleVec[1]);
-                int radius = (int) circleVec[2];
+                if(x == 0)
+                {
+                    x1 = circleVec[0];
+                    y1 = circleVec[1];
+                    r1 = circleVec[2];
 
-                Imgproc.circle(input, center, 3, new Scalar(255, 255, 255), 5);
-                Imgproc.circle(input, center, radius, new Scalar(255, 255, 255), 2);
+                }
+                else if (x == 1 )
+                {
+                    x2 = circleVec[0];
+                    y2 = circleVec[1];
+                    r2 = circleVec[2];
+                }
+
+                Log.i(TAG, "circle vec 0: " + circleVec[0] + " cirlce vec 1 :  " + circleVec[1] +" circle vec 2 :"+circleVec[2]);
+
+               // Imgproc.circle(input, center, 3, new Scalar(255, 255, 255), 5);
+               // Imgproc.circle(input, center, radius, new Scalar(255, 255, 255), 2);
+            }
+           if(y1 >= y2 - 35 && y1 <= y2+35 )
+
+            {
+                Imgproc.circle(input, new Point(x1, y1), (int) r1, new Scalar(255, 255, 255), 2);
+                Imgproc.circle(input, new Point(x2, y2), (int) r2, new Scalar(255, 255, 255), 2);
             }
         }
 
         circles.release();
         input.release();
-        return inputFrame;
+        return inputFrame.rgba();
     }
 
-    private Mat runCamera(Mat inputFrame)
+    private Mat checkBackViewAngle( CameraBridgeViewBase.CvCameraViewFrame inputFrame)
     {
       //getting coordinates of the image on screen
-        int[] values = new int[2]; //top left corner
-        imageView.getLocationOnScreen(values);
-        float density = getResources().getDisplayMetrics().density;
-        int widthDp = (int)(imageView.getWidth() / density); // X of the right point
-        int leftDp = (int)(imageView.getLeft() / density);   //left point
-        Log.i("X & Y & width & left",values[0]+" "+values[1]+" "+widthDp + " " + leftDp) ;
+//        int[] values = new int[2]; //top left corner
+//        imageView.getLocationOnScreen(values);
 
-        Date date = new Date(System.currentTimeMillis());
-        String dateString= date.toString();
+//        int widthDp = (int)(imageView.getWidth() / density); // X of the right point
+//        int leftDp = (int)(imageView.getLeft() / density);   //left point
+//        int heightDp = (int)(imageView.getHeight() / density);
+//       // Log.i("qwerty"," X top left "+values[0]+" Y top left "+values[1] + leftDp +" heightDp =  " +heightDp) ;
+//        Log.i("qwerty","value[0] = "+values[0]);
+//        Log.i("qwerty","value[1] = "+values[1] +" and value[1]+ leftDp = "+ values[1] + leftDp);
+//        Log.i("qwerty","leftDp = "+leftDp);
+//        Log.i("qwerty","widthDp = "+widthDp);
+//        Log.i("qwerty","heightDp = "+heightDp);
+
+        float density = getResources().getDisplayMetrics().density;
+        Log.i("qwerty","Density " + density);
+        float left = imageView.getLeft() /density;
+        float top = imageView.getTop()/density;
+        float right = imageView.getRight() /density;
+        float bottom = imageView.getBottom()/density;
+        Log.i("qwerty","Left " +left);
+        Log.i("qwerty","Top  " +top);
+        Log.i("qwerty","Right " +right);
+        Log.i("qwerty","Bottom " +bottom);
+        float imageArea = right * bottom ;
+
+
+
+
+
         double maxArea=0;
         Point first = new Point(0,0) ,second = new Point(0,0) ;
         Mat edges = new Mat();
-        Mat savedImg= new Mat();
-        inputFrame.copyTo(savedImg);
         List<MatOfPoint> contours = new ArrayList<>();
-        mRgba = inputFrame;
+     //   mRgba = inputFrame;
+        mRgba = inputFrame.rgba();
         Imgproc.cvtColor(mRgba,  mRgba, Imgproc.COLOR_BGR2GRAY);
         Imgproc.GaussianBlur(mRgba, mRgba, new Size(5, 5), 0);
         Imgproc.Canny(mRgba, mRgba, 30, 90);
@@ -427,20 +445,24 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         }
 
         Imgproc.rectangle(mRgba,first, second,new Scalar(255.0,255.0,255.0));
+        double contourArea = (second.x - first.x ) * (second.y - first.y) ;
         if(autoCapture.isChecked())
         {
-            if (first.x >= 250 && first.x <=350   && first.y >=200 && first.y <= 300  &&
-                    second.x >= 530 && second.x <=650   && second.y >=500 && second.y <= 600)
+
+
+            if (imageArea >= contourArea -40000 && imageArea <= contourArea + 40000)
             {
-                Log.i(TAG , "hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh");
+                Log.i(TAG , "Photo captured (Success)");
                 takePicture(mRgba);
             }
         }
-//        Log.i(TAG , "First Point"+first.x +" Second Point"+first.y);
-//        Log.i(TAG , "Second Point"+second.x +" Second Point"+second.y);
-        mRgba.convertTo(mRgbaF,CvType.CV_8U);
-        return  mRgbaF ;
-
+        Log.i(TAG,"Area of contour = "+contourArea);
+        Log.i(TAG,"Area of image = "+imageArea);
+        Log.i(TAG,"Area of Screnn = "+ (1196*720));
+        Log.i(TAG , "First Point X"+first.x +" First Point Y"+first.y);
+        Log.i(TAG , "Second Point X"+second.x +" Second Point Y"+second.y);
+       // mRgba.convertTo(mRgbaF,CvType.CV_8U);
+     return mRgba ;
     }
 
     private void takePicture(Mat tmp)
