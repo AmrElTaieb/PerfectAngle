@@ -39,6 +39,7 @@ import org.opencv.imgproc.Imgproc;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -294,7 +295,8 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
             result=inputFrame.rgba();
         }
         if(faceTwo.isPressed()) {
-             result = runCameraTwo(inputFrame);
+            mRgbaF =runCameraTwo(frameToMat);
+            result= inputFrame.rgba();
         }
         return result;
     }
@@ -356,9 +358,10 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
                 .show();
     }
 
-    private Mat runCameraTwo(CameraBridgeViewBase.CvCameraViewFrame inputFrame)
+    private Mat runCameraTwo(Mat inputFrame)
     {
-        Mat input = inputFrame.gray();
+        Mat input =inputFrame;
+        Imgproc.cvtColor(input,  input, Imgproc.COLOR_BGR2GRAY);
         Mat circles = new Mat();
         Imgproc.blur(input, input, new Size(7, 7), new Point(2, 2));
         Imgproc.HoughCircles(input, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 200, 100, 90, 70, 1000);
@@ -383,7 +386,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
 
         circles.release();
         input.release();
-        return inputFrame.rgba();
+        return inputFrame;
     }
 
     private Mat runCamera(Mat inputFrame)
@@ -396,11 +399,13 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         int leftDp = (int)(imageView.getLeft() / density);   //left point
         Log.i("X & Y & width & left",values[0]+" "+values[1]+" "+widthDp + " " + leftDp) ;
 
-
-
+        Date date = new Date(System.currentTimeMillis());
+        String dateString= date.toString();
         double maxArea=0;
         Point first = new Point(0,0) ,second = new Point(0,0) ;
         Mat edges = new Mat();
+        Mat savedImg= new Mat();
+        inputFrame.copyTo(savedImg);
         List<MatOfPoint> contours = new ArrayList<>();
         mRgba = inputFrame;
         Imgproc.cvtColor(mRgba,  mRgba, Imgproc.COLOR_BGR2GRAY);
