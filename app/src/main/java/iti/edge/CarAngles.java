@@ -89,9 +89,11 @@ public class CarAngles extends Activity {
         return inputFrame.rgba();
     }
 
-    public Mat checkBackViewAngle(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+    public Mat checkBackViewAngle(Mat inputFrame) {
 
-        mRgba = inputFrame.rgba();
+       // mRgba = inputFrame;
+        Mat savedImage= new Mat();
+        inputFrame.copyTo(savedImage);
         float density = context.getResources().getDisplayMetrics().density;
         Log.i("qwerty", "Density " + density);
         float left = imageView.getLeft() / density;
@@ -110,10 +112,10 @@ public class CarAngles extends Activity {
         List<MatOfPoint> contours = new ArrayList<>();
         //   mRgba = inputFrame;
         //  mRgba = inputFrame.rgba();
-        Imgproc.cvtColor(mRgba, mRgba, Imgproc.COLOR_BGR2GRAY);
-        Imgproc.GaussianBlur(mRgba, mRgba, new Size(5, 5), 0);
-        Imgproc.Canny(mRgba, mRgba, 15, 45);
-        Imgproc.findContours(mRgba, contours, edges, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
+        Imgproc.cvtColor(inputFrame, inputFrame, Imgproc.COLOR_BGR2GRAY);
+        Imgproc.GaussianBlur(inputFrame, inputFrame, new Size(5, 5), 0);
+        Imgproc.Canny(inputFrame, inputFrame, 15, 45);
+        Imgproc.findContours(inputFrame, contours, edges, Imgproc.RETR_LIST, Imgproc.CHAIN_APPROX_SIMPLE);
         Iterator<MatOfPoint> iterator = contours.iterator();
         Rect rect;
         while (iterator.hasNext()) {
@@ -127,12 +129,12 @@ public class CarAngles extends Activity {
             }
         }
 
-        Imgproc.rectangle(mRgba, first, second, new Scalar(255.0, 255.0, 255.0));
+        Imgproc.rectangle(inputFrame, first, second, new Scalar(255.0, 255.0, 255.0));
         double contourArea = (second.x - first.x) * (second.y - first.y);
         if (CameraActivity.getSwitchState()) {
             if (imageArea >= contourArea - 40000 && imageArea <= contourArea + 40000) {
                 Log.i(TAG, "Photo captured (Success)");
-                dataStorage.takePicture(mRgba);
+                dataStorage.takePicture(savedImage);
             }
         }
         Log.i(TAG, "Area of contour = " + contourArea);
