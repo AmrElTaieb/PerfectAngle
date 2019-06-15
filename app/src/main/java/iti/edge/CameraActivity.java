@@ -279,7 +279,8 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
             //   mRgbaF = checkBackViewAngle(frameToMat, frameToMat2);
             // mRgbaF = carAngles.checkBackViewAngle(frameToMat);
             //  result = inputFrame.rgba();
-            result = carAngles.checkBackViewAngle(inputFrame);
+             carAngles.checkBackViewAngle(inputFrame.rgba());
+             result = inputFrame.rgba();
         }
         if (faceTwo.isPressed()) {
             changeCarPic(2);
@@ -287,13 +288,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         }
 
 
-//        if(flag==true) {
-//            takePicture(inputFrame.rgba());
-//            flag=false;
-//        }
-
         return result;
-        //return mRgbaF ;
     }
 
     private boolean checkPermission() {
@@ -373,25 +368,3 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
 
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

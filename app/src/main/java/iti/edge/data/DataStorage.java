@@ -2,6 +2,7 @@ package iti.edge.data;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.media.MediaPlayer;
 import android.media.MediaScannerConnection;
 import android.os.Environment;
 import android.util.Log;
@@ -13,6 +14,8 @@ import org.opencv.core.Mat;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Date;
+
+import iti.edge.R;
 
 public class DataStorage {
     private static final String TAG = "perfect-angle";
@@ -32,6 +35,9 @@ public class DataStorage {
         } catch (CvException e) {
             Log.d("Exception", e.getMessage());
         }
+
+        final MediaPlayer captureSoundMediaPlayer = MediaPlayer.create(context, R.raw.shutter);
+        captureSoundMediaPlayer.start();
     }
 
     private void writeToSDFile(Bitmap bitmapImage) {
@@ -43,7 +49,7 @@ public class DataStorage {
         File dir = new File(root + "/PerfectAngle");
         dir.mkdirs();
         Log.i(TAG, "path: " + dir);
-        String fname = dateString + "temp.jpg";
+        String fname = "temp.jpg";
         File file = new File(dir, fname);
         if (file.exists())
             file.delete();
