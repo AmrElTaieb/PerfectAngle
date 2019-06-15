@@ -64,7 +64,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
 
     private Point detectionPoint;
     private int detectionArea;
-    private int count = 0;
+    private static int count = 0;
 
     private Button faceOne;
     private Button faceTwo;
@@ -274,16 +274,26 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
 
         Mat result = new Mat();
-        if (faceOne.isPressed()) {
-            changeCarPic(1);
-            //   mRgbaF = checkBackViewAngle(frameToMat, frameToMat2);
-            // mRgbaF = carAngles.checkBackViewAngle(frameToMat);
-            //  result = inputFrame.rgba();
-            result = carAngles.checkBackViewAngle(inputFrame);
-        }
-        if (faceTwo.isPressed()) {
-            changeCarPic(2);
-            result = carAngles.checkSideViewAngle(inputFrame);
+        if (count < 5){
+            if (faceOne.isPressed()) {
+                changeCarPic(1);
+                //   mRgbaF = checkBackViewAngle(frameToMat, frameToMat2);
+                // mRgbaF = carAngles.checkBackViewAngle(frameToMat);
+                //  result = inputFrame.rgba();
+                Thread one = new Thread(()->{
+                    count++;
+                    Mat res = carAngles.checkBackViewAngle(inputFrame);
+                });
+                one.start();
+            }
+            if (faceTwo.isPressed()) {
+                changeCarPic(2);
+                Thread one = new Thread(()->{
+                    count++;
+                    Mat res = carAngles.checkSideViewAngle(inputFrame);
+                });
+                one.start();
+            }
         }
 
 
@@ -292,7 +302,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
 //            flag=false;
 //        }
 
-        return result;
+        return inputFrame.rgba();
         //return mRgbaF ;
     }
 

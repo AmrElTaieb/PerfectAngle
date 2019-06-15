@@ -23,9 +23,9 @@ import iti.edge.data.DataStorage;
 import static iti.edge.CameraActivity.imageView;
 
 public class CarAngles extends Activity {
-    Context context;
+    private Context context;
     private Mat mRgba;
-    DataStorage dataStorage;
+    private DataStorage dataStorage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
