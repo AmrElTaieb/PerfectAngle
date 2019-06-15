@@ -282,7 +282,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
                 //  result = inputFrame.rgba();
                 Thread one = new Thread(()->{
                     count++;
-                    Mat res = carAngles.checkBackViewAngle(inputFrame);
+                    Mat res = carAngles.checkBackViewAngle(inputFrame.rgba());
                 });
                 one.start();
             }
