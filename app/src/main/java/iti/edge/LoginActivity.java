@@ -55,6 +55,7 @@ public class LoginActivity extends AppCompatActivity {
         googleBtn  =(SignInButton)findViewById(R.id.googleBtn);
         login = findViewById(R.id.loginBtn);
         register = findViewById(R.id.registerBtn);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
         mAuth = FirebaseAuth.getInstance();

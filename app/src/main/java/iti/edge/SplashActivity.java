@@ -25,6 +25,7 @@ public class SplashActivity extends AppCompatActivity {
         progressBar = (ProgressBar)findViewById(R.id.progressBar);
         progressBar.setVisibility(progressBar.VISIBLE);
         imageView = findViewById(R.id.imageView);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
         //Wait for 3 seconds and start Activity Main
         new Handler().postDelayed(new Runnable() {
             @Override
