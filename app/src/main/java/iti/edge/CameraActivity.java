@@ -55,7 +55,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     private static final int PERMISSION_REQUEST_CODE = 200;
     private Context cameraContext;
     private CarAngles carAngles;
-    public static ImageView imageView;
+    static ImageView imageView;
     protected CameraBridgeViewBase mCamera;
     private int mobileHeight, mobileWidth;
 
@@ -116,12 +116,10 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_1_0, this, mLoaderCallback);
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         cameraContext = getApplicationContext();
-
         getMobileDimensions();
         if (!checkPermission()) {
             requestPermission();
@@ -137,7 +135,9 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         faceOne = findViewById(R.id.face_one);
         faceOne.setPressed(true);
         faceOne.setOnClickListener((v) -> {
-
+            detectionPoint = new Point(1, 1);
+            detectionArea = 1;
+            count = 1;
 
         });
         faceOne.setOnTouchListener((v, event) -> {
@@ -156,7 +156,9 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         });
         faceTwo = findViewById(R.id.face_two);
         faceTwo.setOnClickListener((v) -> {
-
+            detectionPoint = new Point(2, 2);
+            detectionArea = 2;
+            count = 2;
         });
         faceTwo.setOnTouchListener((v, event) -> {
             capFlag = true;

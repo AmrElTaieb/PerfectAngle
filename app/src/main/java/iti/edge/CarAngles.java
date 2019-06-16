@@ -22,9 +22,10 @@ import iti.edge.data.DataStorage;
 
 
 public class CarAngles extends Activity {
-    Context context;
+    private Context context;
     private Mat mRgba;
-    DataStorage dataStorage;
+    private DataStorage dataStorage;
+
     ImageView imageView ;
 
     @Override
