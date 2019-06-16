@@ -135,10 +135,6 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         faceOne = findViewById(R.id.face_one);
         faceOne.setPressed(true);
         faceOne.setOnClickListener((v) -> {
-            detectionPoint = new Point(1, 1);
-            detectionArea = 1;
-            count = 1;
-
         });
         faceOne.setOnTouchListener((v, event) -> {
             capFlag = true;
@@ -156,9 +152,6 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         });
         faceTwo = findViewById(R.id.face_two);
         faceTwo.setOnClickListener((v) -> {
-            detectionPoint = new Point(2, 2);
-            detectionArea = 2;
-            count = 2;
         });
         faceTwo.setOnTouchListener((v, event) -> {
             capFlag = true;
