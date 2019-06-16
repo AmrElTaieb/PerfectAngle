@@ -30,7 +30,7 @@ public class SplashActivity extends AppCompatActivity {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                SplashActivity.this.startActivity(new Intent(SplashActivity.this,CameraActivity.class));
+                SplashActivity.this.startActivity(new Intent(SplashActivity.this,LoginActivity.class));
                 SplashActivity.this.finish();
             }
         },3000); // 3000 = 3seconds
