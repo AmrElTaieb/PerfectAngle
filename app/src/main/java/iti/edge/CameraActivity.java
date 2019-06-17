@@ -186,6 +186,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
 
         });
         faceFour.setOnTouchListener((v, event) -> {
+            capFlag = true;
             faceFour.setPressed(true);
             if (faceOne.isPressed()) {
                 faceOne.setPressed(false);
@@ -285,6 +286,23 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
                         }
                     });
                 }
+                else if (x ==4)
+                {
+                    imageView.setImageResource(R.drawable.wheelview);
+
+                    ViewTreeObserver vto4 = imageView.getViewTreeObserver();
+                    vto4.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                        public boolean onPreDraw() {
+                            imageView.getViewTreeObserver().removeOnPreDrawListener(this);
+                            finalHeight2 = imageView.getMeasuredHeight()/2;
+                            finalWidth2 = imageView.getMeasuredWidth()/2;
+
+                            Log.i("checkDimension","Height 2: " + finalHeight2 + " Width 2: " + finalWidth2);
+                            Log.i("xxxx","image area taken from new function vol 4 " + finalHeight2 * finalWidth2);
+                            return true;
+                        }
+                    });
+                }
 
             }
         });
@@ -303,9 +321,6 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         if (faceOne.isPressed()) {
             Log.i("Amr","face one "+capFlag);
             changeCarPic(1);
-            //   mRgbaF = checkBackViewAngle(frameToMat, frameToMat2);
-            // mRgbaF = carAngles.checkBackViewAngle(frameToMat);
-            //  result = inputFrame.rgba();
             if(getSwitchState() && capFlag)
             {
                 carAngles.checkBackViewAngle(inputFrame.rgba());
@@ -318,7 +333,8 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
             changeCarPic(2);
             if(getSwitchState() && capFlag)
             {
-                result = carAngles.checkSideViewAngle(inputFrame);
+               carAngles.checkSideViewAngle(inputFrame);
+                result = inputFrame.rgba();
             }
 
         }
@@ -333,14 +349,20 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
              }
 
          }
+         if(faceFour.isPressed())
+         {
+             Log.i("Amr","face Three "+capFlag);
+             changeCarPic(4);
+             if(getSwitchState() && capFlag)
+             {
+                 carAngles.checkCarWheel(inputFrame);
+                 result = inputFrame.rgba();
+             }
 
-//        if(flag==true) {
-//            takePicture(inputFrame.rgba());
-//            flag=false;
-//        }
+         }
 
         return result;
-        //return mRgbaF ;
+
     }
 
     private boolean checkPermission() {

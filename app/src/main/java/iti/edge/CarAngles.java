@@ -55,11 +55,10 @@ public class CarAngles extends Activity {
         Mat circles = new Mat();
         Imgproc.blur(input, input, new Size(7, 7), new Point(2, 2));
         Imgproc.HoughCircles(input, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 200, 100, 90, 70, 1000);
-        //  Log.i(TAG, String.valueOf("size: " + circles.cols()) + ", " + String.valueOf(circles.rows()));
         double x1 = 0, x2 = 0, y1 = 0, y2 = 0;  // coordinates for the circle
         double r1 = 0, r2 = 0;           // radius of the circle
         if (circles.cols() == 2) {
-            for (int x = 0; x < Math.min(circles.cols(), 5); x++) // so it doesnt catch more than 5 circles , in this case always 2
+            for (int x = 0; x < circles.cols(); x++)
             {
                 double circleVec[] = circles.get(0, x);
                 if (circleVec == null) {
@@ -219,4 +218,45 @@ public class CarAngles extends Activity {
         // mRgba.convertTo(mRgbaF,CvType.CV_8U);
         return mRgba;
     }
+    public Mat checkCarWheel(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
+
+        Mat savedImage = new Mat();
+        inputFrame.rgba().copyTo(savedImage);
+        Mat input = inputFrame.gray();
+        Mat circles = new Mat();
+        Imgproc.blur(input, input, new Size(7, 7), new Point(2, 2));
+        Imgproc.HoughCircles(input, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 200, 100, 90, 70, 1000);
+        //  Log.i(TAG, String.valueOf("size: " + circles.cols()) + ", " + String.valueOf(circles.rows()));
+        double x1 = 0,  y1 = 0;  // coordinates for the circle
+        double r1 = 0;           // radius of the circle
+        if (circles.cols() == 1) {
+            for (int x = 0; x < circles.cols(); x++)
+            {
+                double circleVec[] = circles.get(0, x);
+                if (circleVec == null) {
+                    break;
+                }
+                if (x == 0) {
+                    x1 = circleVec[0];
+                    y1 = circleVec[1];
+                    r1 = circleVec[2];
+
+                }
+                Log.i(TAG, "circle vec 0: " + circleVec[0] + " cirlce vec 1 :  " + circleVec[1] + " circle vec 2 :" + circleVec[2]);
+
+
+            }
+            if (r1 * 2 >= 40 && r1*2 <= 20) {
+                Imgproc.circle(input, new Point(x1, y1), (int) r1, new Scalar(255, 255, 255), 2);
+                dataStorage.takePicture(savedImage);
+                Log.i("Amr","Entered Wheel view After taking pic");
+                CameraActivity.changeSwitchState();
+            }
+        }
+
+        circles.release();
+        input.release();
+        return inputFrame.rgba();
+    }
+
 }
