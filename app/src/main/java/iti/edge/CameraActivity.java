@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -64,9 +65,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     private Mat mRgbaF;
     private Mat mRgbaT;
 
-    private Point detectionPoint;
-    private int detectionArea;
-    private static int count = 0;
+    private static boolean capFlag = true;
 
     private Button faceOne;
     private Button faceTwo;
@@ -75,12 +74,24 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     private Button manualCapture;
     private static Switch autoCapture;
     private boolean flag = false;
-
+    ImageView imageView2 ;
+    int finalHeight2, finalWidth2;
     public static boolean getSwitchState() {
         if (autoCapture.isChecked()) {
             return true;
         } else {
             return false;
+        }
+    }
+    public static void changeSwitchState()
+    {
+        if(capFlag)
+        {
+            capFlag = false;
+        }
+        else
+        {
+            capFlag= true;
         }
     }
 
@@ -122,22 +133,13 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         mCamera.setVisibility(SurfaceView.VISIBLE);
         mCamera.setCvCameraViewListener(this);
         carAngles = new CarAngles(cameraContext);
-
-
         imageView = findViewById(R.id.imageView);
-        detectionPoint = new Point(1, 1);
-        detectionArea = 1;
-        count = 1;
-
         faceOne = findViewById(R.id.face_one);
         faceOne.setPressed(true);
         faceOne.setOnClickListener((v) -> {
-            detectionPoint = new Point(1, 1);
-            detectionArea = 1;
-            count = 1;
-
         });
         faceOne.setOnTouchListener((v, event) -> {
+            capFlag = true;
             faceOne.setPressed(true);
             if (faceTwo.isPressed()) {
                 faceTwo.setPressed(false);
@@ -150,11 +152,9 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         });
         faceTwo = findViewById(R.id.face_two);
         faceTwo.setOnClickListener((v) -> {
-            detectionPoint = new Point(2, 2);
-            detectionArea = 2;
-            count = 2;
         });
         faceTwo.setOnTouchListener((v, event) -> {
+            capFlag = true;
             faceTwo.setPressed(true);
             if (faceOne.isPressed()) {
                 faceOne.setPressed(false);
@@ -167,11 +167,10 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         });
         faceThree = findViewById(R.id.face_three);
         faceThree.setOnClickListener((v) -> {
-            detectionPoint = new Point(3, 3);
-            detectionArea = 3;
-            count = 3;
+
         });
         faceThree.setOnTouchListener((v, event) -> {
+            capFlag = true;
             faceThree.setPressed(true);
             if (faceOne.isPressed()) {
                 faceOne.setPressed(false);
@@ -184,9 +183,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         });
         faceFour = findViewById(R.id.face_four);
         faceFour.setOnClickListener((v) -> {
-            detectionPoint = new Point(4, 4);
-            detectionArea = 4;
-            count = 4;
+
         });
         faceFour.setOnTouchListener((v, event) -> {
             faceFour.setPressed(true);
@@ -234,10 +231,58 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
             @Override
             public void run() {
 
-                if (x == 1) {
+                if (x == 1)
+                {
                     imageView.setImageResource(R.drawable.backviewl);
-                } else {
+
+
+                    ViewTreeObserver vto1 = imageView.getViewTreeObserver();
+                    vto1.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                        public boolean onPreDraw() {
+                            imageView.getViewTreeObserver().removeOnPreDrawListener(this);
+                            finalHeight2 = imageView.getMeasuredHeight()/2;
+                            finalWidth2 = imageView.getMeasuredWidth()/2;
+
+                            Log.i("checkDimension","Height 2: " + finalHeight2 + " Width 2: " + finalWidth2);
+                            Log.i("xxxx","image area taken from new function vol 1 " + finalHeight2 * finalWidth2);
+                            return true;
+                        }
+                    });
+
+                } else if (x == 2)
+                {
                     imageView.setImageResource(R.drawable.sideview);
+
+                    ViewTreeObserver vto2 = imageView.getViewTreeObserver();
+                    vto2.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                        public boolean onPreDraw() {
+                            imageView.getViewTreeObserver().removeOnPreDrawListener(this);
+                            finalHeight2 = imageView.getMeasuredHeight()/2;
+                            finalWidth2 = imageView.getMeasuredWidth()/2;
+
+                            Log.i("checkDimension","Height 2: " + finalHeight2 + " Width 2: " + finalWidth2);
+                            Log.i("xxxx","image area taken from new function vol 2 " + finalHeight2 * finalWidth2);
+
+                            return true;
+                        }
+                    });
+                }
+                else if (x == 3)
+                {
+                    imageView.setImageResource(R.drawable.diagonalview);
+
+                    ViewTreeObserver vto3 = imageView.getViewTreeObserver();
+                    vto3.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+                        public boolean onPreDraw() {
+                            imageView.getViewTreeObserver().removeOnPreDrawListener(this);
+                            finalHeight2 = imageView.getMeasuredHeight()/2;
+                            finalWidth2 = imageView.getMeasuredWidth()/2;
+
+                            Log.i("checkDimension","Height 2: " + finalHeight2 + " Width 2: " + finalWidth2);
+                            Log.i("xxxx","image area taken from new function vol 3 " + finalHeight2 * finalWidth2);
+                            return true;
+                        }
+                    });
                 }
 
             }
@@ -253,36 +298,47 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
 
         mRgba = inputFrame.rgba();
-        Mat result = new Mat();
-        if (count < 5){
-            if (faceOne.isPressed()) {
-                changeCarPic(1);
-                //   mRgbaF = checkBackViewAngle(frameToMat, frameToMat2);
-                // mRgbaF = carAngles.checkBackViewAngle(frameToMat);
-                //  result = inputFrame.rgba();
-                Thread one = new Thread(()->{
-                    count++;
-                    Mat res = carAngles.checkBackViewAngle(inputFrame.rgba());
-                });
-                one.start();
+        Mat result = inputFrame.rgba();
+        if (faceOne.isPressed()) {
+            Log.i("Amr","face one "+capFlag);
+            changeCarPic(1);
+            //   mRgbaF = checkBackViewAngle(frameToMat, frameToMat2);
+            // mRgbaF = carAngles.checkBackViewAngle(frameToMat);
+            //  result = inputFrame.rgba();
+            if(getSwitchState() && capFlag)
+            {
+                carAngles.checkBackViewAngle(inputFrame.rgba());
+                result = inputFrame.rgba();
             }
-            if (faceTwo.isPressed()) {
-                changeCarPic(2);
-                Thread one = new Thread(()->{
-                    count++;
-                    Mat res = carAngles.checkSideViewAngle(inputFrame);
-                });
-                one.start();
-            }
-        }
 
+        }
+        if (faceTwo.isPressed()) {
+            Log.i("Amr","face Two "+capFlag);
+            changeCarPic(2);
+            if(getSwitchState() && capFlag)
+            {
+                result = carAngles.checkSideViewAngle(inputFrame);
+            }
+
+        }
+         if(faceThree.isPressed())
+         {
+             Log.i("Amr","face Three "+capFlag);
+             changeCarPic(3);
+             if(getSwitchState() && capFlag)
+             {
+                 carAngles.checkDigonalView(inputFrame.rgba());
+                 result = inputFrame.rgba();
+             }
+
+         }
 
 //        if(flag==true) {
 //            takePicture(inputFrame.rgba());
 //            flag=false;
 //        }
 
-        return inputFrame.rgba();
+        return result;
         //return mRgbaF ;
     }
 

@@ -31,13 +31,11 @@ public class DataStorage {
         try {
             bmp = Bitmap.createBitmap(tmp.cols(), tmp.rows(), Bitmap.Config.ARGB_8888);
             Utils.matToBitmap(tmp, bmp);
-
             writeToSDFile(bmp);
         } catch (CvException e) {
             Log.d("Exception", e.getMessage());
         }
-
-        final MediaPlayer captureSoundMediaPlayer = MediaPlayer.create(context, R.raw.shutter);
+        final MediaPlayer captureSoundMediaPlayer = MediaPlayer.create(context,R.raw.shutter);
         captureSoundMediaPlayer.start();
     }
 
@@ -50,7 +48,7 @@ public class DataStorage {
         File dir = new File(root + "/PerfectAngle");
         dir.mkdirs();
         Log.i(TAG, "path: " + dir);
-        String fname = "temp.jpg";
+        String fname = dateString + "temp.jpg";
         File file = new File(dir, fname);
         if (file.exists())
             file.delete();
