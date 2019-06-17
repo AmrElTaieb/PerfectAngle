@@ -26,7 +26,6 @@ public class DataStorage {
     }
 
     public void takePicture(Mat tmp) {
-        Log.i("manual-capture", "takePicture");
         Bitmap bmp;
         try {
             bmp = Bitmap.createBitmap(tmp.cols(), tmp.rows(), Bitmap.Config.ARGB_8888);

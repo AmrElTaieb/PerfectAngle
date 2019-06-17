@@ -198,11 +198,12 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         });
         manualCapture = findViewById(R.id.manual_capture);
         manualCapture.setOnClickListener((v)->{
+            Log.i("manual-capture", "clickListener");
             DataStorage dataStorage = new DataStorage(this);
             dataStorage.takePicture(mRgba);
         });
         autoCapture = findViewById(R.id.auto_capture);
-        autoCapture.setChecked(false);
+        autoCapture.setChecked(true);
     }
 
     public void getMobileDimensions() {
