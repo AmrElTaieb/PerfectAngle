@@ -4,10 +4,7 @@
     xmlns:opencv="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".CameraActivity"
-    >
-
-
+    tools:context=".CameraActivity">
 
         <RelativeLayout
             android:layout_width="match_parent"
@@ -25,38 +22,50 @@
                 android:id="@+id/imageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/backviewl"
-
-
-                />
+                android:src="@drawable/backviewl" />
 
         </RelativeLayout>
 
-
-
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/bottom"
         android:layout_width="80dp"
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
         android:orientation="vertical">
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/defaultWritingColor"
+                android:textSize="14sp"
+                android:gravity="center"
+                android:text="@string/auto_caputre_switch_label"/>
+
+            <Switch
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:trackTint="@color/defaultWritingColor"
+                android:id="@+id/auto_capture"/>
+
+        </LinearLayout>
+
+        <Button
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_centerInParent="true"
+            android:id="@+id/manual_capture"
+            android:background="@drawable/round_button"
             android:textColor="@color/defaultWritingColor"
-            android:textSize="14sp"
-            android:gravity="center"
-            android:text="@string/auto_caputre_switch_label"/>
+            android:focusable="true" />
 
-        <Switch
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:trackTint="@color/defaultWritingColor"
-            android:id="@+id/auto_capture"/>
-
-    </LinearLayout>
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/top"
@@ -104,16 +113,6 @@
             android:focusable="true"
             android:layout_weight="1"
             android:text="4" />
-
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:id="@+id/face_five"
-            android:background="@drawable/custom_button"
-            android:textColor="@color/defaultWritingColor"
-            android:focusable="true"
-            android:layout_weight="1"
-            android:text="5" />
 
     </LinearLayout>
 

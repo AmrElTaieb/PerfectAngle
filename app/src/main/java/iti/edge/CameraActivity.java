@@ -48,6 +48,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import iti.edge.data.DataStorage;
+
 public class CameraActivity extends Activity implements CameraBridgeViewBase.CvCameraViewListener2 {
 
     private static final String TAG = "perfect-angle";
@@ -70,7 +72,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     private Button faceTwo;
     private Button faceThree;
     private Button faceFour;
-    private Button faceFive;
+    private Button manualCapture;
     private static Switch autoCapture;
     private boolean flag = false;
 
@@ -141,10 +143,8 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
                 faceTwo.setPressed(false);
             } else if (faceThree.isPressed()) {
                 faceThree.setPressed(false);
-            } else if (faceFour.isPressed()) {
-                faceFour.setPressed(false);
             } else {
-                faceFive.setPressed(false);
+                faceFour.setPressed(false);
             }
             return true;
         });
@@ -160,10 +160,8 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
                 faceOne.setPressed(false);
             } else if (faceThree.isPressed()) {
                 faceThree.setPressed(false);
-            } else if (faceFour.isPressed()) {
-                faceFour.setPressed(false);
             } else {
-                faceFive.setPressed(false);
+                faceFour.setPressed(false);
             }
             return true;
         });
@@ -179,10 +177,8 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
                 faceOne.setPressed(false);
             } else if (faceTwo.isPressed()) {
                 faceTwo.setPressed(false);
-            } else if (faceFour.isPressed()) {
-                faceFour.setPressed(false);
             } else {
-                faceFive.setPressed(false);
+                faceFour.setPressed(false);
             }
             return true;
         });
@@ -198,35 +194,18 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
                 faceOne.setPressed(false);
             } else if (faceTwo.isPressed()) {
                 faceTwo.setPressed(false);
-            } else if (faceThree.isPressed()) {
-                faceThree.setPressed(false);
             } else {
-                faceFive.setPressed(false);
+                faceThree.setPressed(false);
             }
             return true;
         });
-        faceFive = findViewById(R.id.face_five);
-        faceFive.setOnClickListener((v) -> {
-            detectionPoint = new Point(5, 5);
-            detectionArea = 5;
-            count = 5;
-            faceFive.setPressed(true);
-        });
-        faceFive.setOnTouchListener((v, event) -> {
-            faceFive.setPressed(true);
-            if (faceOne.isPressed()) {
-                faceOne.setPressed(false);
-            } else if (faceTwo.isPressed()) {
-                faceTwo.setPressed(false);
-            } else if (faceThree.isPressed()) {
-                faceThree.setPressed(false);
-            } else {
-                faceFour.setPressed(false);
-            }
-            return true;
+        manualCapture = findViewById(R.id.manual_capture);
+        manualCapture.setOnClickListener((v)->{
+            DataStorage dataStorage = new DataStorage(this);
+            dataStorage.takePicture(mRgba);
         });
         autoCapture = findViewById(R.id.auto_capture);
-        autoCapture.setChecked(true);
+        autoCapture.setChecked(false);
     }
 
     public void getMobileDimensions() {
@@ -273,6 +252,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     @Override
     public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
 
+        mRgba = inputFrame.rgba();
         Mat result = new Mat();
         if (count < 5){
             if (faceOne.isPressed()) {
