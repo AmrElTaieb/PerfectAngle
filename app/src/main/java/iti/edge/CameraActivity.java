@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
@@ -136,6 +137,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
             public void onClick(View v) {
                 FirebaseAuth.getInstance().signOut();
                 Log.i(TAG, "called signout");
+                CameraActivity.this.startActivity(new Intent(CameraActivity.this,LoginActivity.class));
                 CameraActivity.this.finish();
                 Log.i(TAG, "after finish");
                 }
@@ -303,7 +305,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
                 }
                 else if (x ==4)
                 {
-                    imageView.setImageResource(R.drawable.wheelview);
+                    imageView.setImageResource(R.drawable.wheelviewcrop);
 
                     ViewTreeObserver vto4 = imageView.getViewTreeObserver();
                     vto4.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
@@ -326,6 +328,13 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
     @Override
     public void onCameraViewStopped() {
         Log.i(TAG, "onCameraViewStopped");
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        super.onBackPressed();
+        finish();
     }
 
     @Override

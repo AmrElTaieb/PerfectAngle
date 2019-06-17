@@ -42,6 +42,7 @@ public class RegistrationActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent i  = new Intent(RegistrationActivity.this,CameraActivity.class);
                 startActivity(i);
+                finish();
             }
         });
 

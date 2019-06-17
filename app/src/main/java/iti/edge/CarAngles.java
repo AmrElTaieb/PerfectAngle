@@ -26,15 +26,6 @@ public class CarAngles extends Activity {
     private Mat mRgba;
     private DataStorage dataStorage;
 
-    ImageView imageView ;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-    }
-
     public void setMat(Mat mRgba) {
         this.mRgba = mRgba;
     }
@@ -219,7 +210,7 @@ public class CarAngles extends Activity {
         return mRgba;
     }
     public Mat checkCarWheel(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
-
+        float right = CameraActivity.imageView.getRight() / 2;
         Mat savedImage = new Mat();
         inputFrame.rgba().copyTo(savedImage);
         Mat input = inputFrame.gray();
@@ -246,7 +237,7 @@ public class CarAngles extends Activity {
 
 
             }
-            if (r1 * 2 >= 40 && r1*2 <= 20) {
+            if (r1 * 2 >= right-70 && r1*2 <= right + 70) {
                 Imgproc.circle(input, new Point(x1, y1), (int) r1, new Scalar(255, 255, 255), 2);
                 dataStorage.takePicture(savedImage);
                 Log.i("Amr","Entered Wheel view After taking pic");

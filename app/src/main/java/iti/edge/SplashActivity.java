@@ -15,15 +15,12 @@ import java.io.InputStream;
 public class SplashActivity extends AppCompatActivity {
 
     private ImageView imageView;
-    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         getSupportActionBar().hide();
-        progressBar = (ProgressBar)findViewById(R.id.progressBar);
-        progressBar.setVisibility(progressBar.VISIBLE);
         imageView = findViewById(R.id.imageView);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
         //Wait for 3 seconds and start Activity Main
@@ -33,7 +30,7 @@ public class SplashActivity extends AppCompatActivity {
                 SplashActivity.this.startActivity(new Intent(SplashActivity.this,LoginActivity.class));
                 SplashActivity.this.finish();
             }
-        },3000); // 3000 = 3seconds
+        },1000); // 3000 = 3seconds
 
     }
 }

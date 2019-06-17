@@ -64,6 +64,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent i  = new Intent(LoginActivity.this,RegistrationActivity.class);
                 startActivity(i);
+                finish();
             }
         });
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -73,6 +74,7 @@ public class LoginActivity extends AppCompatActivity {
                 if(mAuth.getCurrentUser()!=null)
                 {
                     startActivity(new Intent(LoginActivity.this,CameraActivity.class));
+                    finish();
                 }
 
             }
