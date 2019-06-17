@@ -9,64 +9,52 @@
 
 
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <org.opencv.android.JavaCameraView
-                android:id="@+id/OpenCVCamera"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:visibility="gone"
-                opencv:camera_id="any"
-                opencv:show_fps="true" />
-
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/backviewl" />
-
-        </RelativeLayout>
-
     <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <org.opencv.android.JavaCameraView
+            android:id="@+id/OpenCVCamera"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:visibility="gone"
+            opencv:camera_id="any"
+            opencv:show_fps="true" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/carback"
+
+
+            />
+
+    </RelativeLayout>
+
+
+
+    <LinearLayout
         android:id="@+id/bottom"
         android:layout_width="80dp"
         android:layout_height="match_parent"
         android:layout_alignParentStart="true"
         android:orientation="vertical">
 
-        <LinearLayout
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:orientation="vertical">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textColor="@color/defaultWritingColor"
-                android:textSize="14sp"
-                android:gravity="center"
-                android:text="@string/auto_caputre_switch_label"/>
-
-            <Switch
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:trackTint="@color/defaultWritingColor"
-                android:id="@+id/auto_capture"/>
-
-        </LinearLayout>
-
-        <Button
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_centerInParent="true"
-            android:id="@+id/manual_capture"
-            android:background="@drawable/round_button"
             android:textColor="@color/defaultWritingColor"
-            android:focusable="true" />
+            android:textSize="14sp"
+            android:gravity="center"
+            android:text="@string/auto_caputre_switch_label"/>
+
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:trackTint="@color/defaultWritingColor"
+            android:id="@+id/auto_capture"/>
         <Button
             android:id="@+id/btnLogout"
             android:layout_width="30dp"
@@ -80,7 +68,7 @@
             android:textColor="#7E9196"
             android:textSize="15sp"/>
 
-    </RelativeLayout>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/top"
@@ -128,6 +116,16 @@
             android:focusable="true"
             android:layout_weight="1"
             android:text="4" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:id="@+id/face_five"
+            android:background="@drawable/custom_button"
+            android:textColor="@color/defaultWritingColor"
+            android:focusable="true"
+            android:layout_weight="1"
+            android:text="5" />
 
     </LinearLayout>
 

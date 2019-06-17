@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.MediaScannerConnection;
 import android.nfc.Tag;
+import com.google.firebase.auth.FirebaseAuth;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -95,6 +96,7 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         }
     }
 
+    private Button logoutBtn;
     private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
         public void onManagerConnected(int status) {
@@ -126,8 +128,21 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
         if (!checkPermission()) {
             requestPermission();
         }
+
         setContentView(R.layout.activity_main);
+        logoutBtn = findViewById(R.id.btnLogout);
+        logoutBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+            public void onClick(View v) {
+                FirebaseAuth.getInstance().signOut();
+                Log.i(TAG, "called signout");
+                CameraActivity.this.finish();
+                Log.i(TAG, "after finish");
+                }
+
+        });
         Log.i(TAG, "called onCreate");
+        super.onCreate(savedInstanceState);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         mCamera = findViewById(R.id.OpenCVCamera);
         mCamera.setVisibility(SurfaceView.VISIBLE);
@@ -442,25 +457,3 @@ public class CameraActivity extends Activity implements CameraBridgeViewBase.CvC
 
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
