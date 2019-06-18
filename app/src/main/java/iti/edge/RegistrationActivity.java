@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -50,11 +51,9 @@ public class RegistrationActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
-                if(email.getText().toString().trim()!=null &&password.getText().toString().trim()!=null ) {
-
+              //  if(email.getText().toString().trim()!=null &&password.getText().toString().trim()!=null ) {
+                if(validateInput()){
                     if (email.getText().toString().trim().matches(emailPattern)) {
-
-
                         mAuth.createUserWithEmailAndPassword(email.getText().toString().trim(), password.getText().toString().trim())
                                 .addOnCompleteListener(RegistrationActivity.this, new OnCompleteListener<AuthResult>() {
                                             @Override
@@ -86,18 +85,26 @@ public class RegistrationActivity extends AppCompatActivity {
                     }
 
                 }
-
-
-
-                else
-                {
-                    Toast.makeText(RegistrationActivity.this, "Enter Email and password.",
-                            Toast.LENGTH_SHORT).show();
+                else{
+                    Toast.makeText(RegistrationActivity.this, "Invalid Credentials ", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "firebaseAuth: login/pass empty in else" );
                 }
 
             }
         });
 
+    }
+    private boolean validateInput() {
+        String emailString = email.getText().toString().trim();
+        String passString = password.getText().toString().trim();
+
+        if (TextUtils.isEmpty(emailString)) {
+            return false;
+        }
+        if(TextUtils.isEmpty(passString)){
+            return false;
+        }
+        return true;
     }
 }
 
