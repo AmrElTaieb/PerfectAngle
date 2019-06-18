@@ -19,12 +19,14 @@
                 android:layout_height="fill_parent"
                 android:visibility="gone"
                 opencv:camera_id="any"
-                opencv:show_fps="true" />
+                />
 
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:src="@drawable/backviewl"
+
                 />
 
         </RelativeLayout>
