@@ -49,38 +49,46 @@ public class RegistrationActivity extends AppCompatActivity {
         register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(email.getText().toString().trim()!=null &&password.getText().toString().trim()!=null ){
+                String emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+";
+                if(email.getText().toString().trim()!=null &&password.getText().toString().trim()!=null ) {
+
+                    if (email.getText().toString().trim().matches(emailPattern)) {
 
 
+                        mAuth.createUserWithEmailAndPassword(email.getText().toString().trim(), password.getText().toString().trim())
+                                .addOnCompleteListener(RegistrationActivity.this, new OnCompleteListener<AuthResult>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<AuthResult> task) {
 
-                    mAuth.createUserWithEmailAndPassword(email.getText().toString().trim(),password.getText().toString().trim())
-                            .addOnCompleteListener(RegistrationActivity.this, new OnCompleteListener<AuthResult>() {
-                                        @Override
-                                        public void onComplete(@NonNull Task<AuthResult> task) {
+                                                if (task.isSuccessful()) {
+                                                    Log.d(TAG, "createUserWithEmail:success");
+                                                    FirebaseUser user = mAuth.getCurrentUser();
+                                                    Toast.makeText(RegistrationActivity.this, "Sign up is successfull.",
+                                                            Toast.LENGTH_SHORT).show();
+                                                    //   updateUI(user);
+                                                } else {
+                                                    Log.w(TAG, "createUserWithEmail:failure", task.getException());
 
-                                            if(task.isSuccessful())
-                                            {
-                                                Log.d(TAG, "createUserWithEmail:success");
-                                                FirebaseUser user = mAuth.getCurrentUser();
-                                                Toast.makeText(RegistrationActivity.this, "Sign up is successfull.",
-                                                        Toast.LENGTH_SHORT).show();
-                                                //   updateUI(user);
+                                                    FirebaseAuthException e = (FirebaseAuthException) task.getException();
+                                                    Toast.makeText(RegistrationActivity.this, "Failed Registration: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+
+                                                    //  Toast.makeText(SignupActivity.this, "Authentication failed.",
+                                                    //   Toast.LENGTH_SHORT).show();
+                                                    //   updateUI(user);
+                                                }
+
                                             }
-                                            else
-                                            {
-                                                Log.w(TAG, "createUserWithEmail:failure", task.getException());
-
-                                                FirebaseAuthException e = (FirebaseAuthException)task.getException();
-                                                Toast.makeText(RegistrationActivity.this, "Failed Registration: "+e.getMessage(), Toast.LENGTH_SHORT).show();
-
-                                                //  Toast.makeText(SignupActivity.this, "Authentication failed.",
-                                                //   Toast.LENGTH_SHORT).show();
-                                                //   updateUI(user);
-                                            }
-
                                         }
-                                    }
-                            ); }
+                                );
+                    }
+                    else {
+                        Toast.makeText(RegistrationActivity.this, "Invalid Email" , Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+
+
+
                 else
                 {
                     Toast.makeText(RegistrationActivity.this, "Enter Email and password.",
